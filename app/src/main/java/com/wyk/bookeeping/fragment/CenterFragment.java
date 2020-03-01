@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.wyk.bookeeping.R;
+import com.wyk.bookeeping.adpter.CenterRecyclerViewAdapter;
 import com.wyk.bookeeping.adpter.TestAdapter;
+import com.wyk.bookeeping.bean.centerItem;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -34,6 +36,10 @@ public class CenterFragment extends Fragment {
     private TestAdapter testAdapter;
     private AppBarLayout appbar;
     private TextView textView;
+
+    private List<centerItem> centerItemList;
+    private centerItem centerItem;
+    private CenterRecyclerViewAdapter centerRecyclerViewAdapter;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,14 +51,57 @@ public class CenterFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         initToolBar();
         initView();
+        initRecyclerViewItemData();
+        initRecyclerView();
     }
 
+    private void initRecyclerViewItemData() {
+        centerItemList = new ArrayList<>();
+
+        /*String[] titleList = {"消息","定时提醒","类别设置","导出数据","设置"};
+        for(int i = 0;i<5;i++){
+            centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_ICONS, 1,titleList[i]);
+            if (i % 2 == 0) {
+                centerItem.isShow = true;
+                centerItem.count = 6;
+            } else {
+                centerItem.isShow = false;
+                centerItem.count = 0;
+                centerItemList.add(centerItem);
+            }
+        }*/
+        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_ICONS, 1);
+        centerItemList.add(centerItem);
+
+        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_BILL, 5);
+        centerItem.setString("type2");
+        centerItemList.add(centerItem);
+
+        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_BUDGET, 5);
+        centerItem.setString("type3");
+        centerItemList.add(centerItem);
+
+        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_COMMONFUNCTIONS, 5);
+        centerItem.setString("type4");
+        centerItemList.add(centerItem);
+
+        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_SETTING, 5);
+        centerItem.setString("type5");
+        centerItemList.add(centerItem);
+    }
+
+    private void initRecyclerView(){
+        centerRecyclerViewAdapter = new CenterRecyclerViewAdapter(getActivity(),centerItemList);
+        recyclerView_center = (RecyclerView)getActivity().findViewById(R.id.recyclerView_center);
+        recyclerView_center.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView_center.setAdapter(centerRecyclerViewAdapter);
+    }
     private void initView(){
         list  = new ArrayList<>();
         for(int x = 0; x < 20; x++){
             list.add("x:"+x);
         }
-        recyclerView_center = (RecyclerView)getActivity().findViewById(R.id.recyclerView_center);
+
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         appbar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
         textView = (TextView) getActivity().findViewById(R.id.textview);
@@ -62,26 +111,17 @@ public class CenterFragment extends Fragment {
         appbar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                Log.i("HERE","!!!!!!!!!!!!!!!!");
                 // 设置 toolbar 背景
-                Log.i("verticalOffset:",verticalOffset+",alphaMaxOffset:"+-alphaMaxOffset);
-                Log.i("TRUEFALSE",(Math.abs(verticalOffset) > -alphaMaxOffset)+"");
                 if (verticalOffset > -alphaMaxOffset) {
-                    Log.i("TAG alpha:",255 * -verticalOffset / alphaMaxOffset+"");
                     toolbar.getBackground().mutate().setAlpha(255 * -verticalOffset / alphaMaxOffset);
                     textView.setText("");
-
                 } else {
-                    Log.i("XXXXXXXX:","XXXXXXXXX");
                     toolbar.getBackground().mutate().setAlpha(255);
                     textView.setText("我的");
 
                 }
             }
         });
-
-        recyclerView_center.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView_center.setAdapter(new TestAdapter(list));
     }
 
     private void initToolBar() {
