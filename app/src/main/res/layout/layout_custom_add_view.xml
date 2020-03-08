@@ -10,10 +10,11 @@
         android:layout_height="?attr/actionBarSize"
         android:visibility="gone" />
 
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="65dp"
         android:background="@color/colorLavender"
         app:contentInsetStart="0dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
@@ -32,31 +33,32 @@
 
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tablayout_1"
-                    android:layout_gravity="bottom"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
+                    android:layout_gravity="bottom"
                     android:background="@color/colorLavender"
                     app:tabIndicatorColor="#FFFFFF"
                     app:tabSelectedTextColor="#FFFFFF"
                     app:tabTextColor="#000000" />
             </LinearLayout>
-
         </LinearLayout>
+
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
+
             <Button
                 android:id="@+id/btn_cancle"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="取消"
+                android:layout_height="40dp"
+                android:layout_gravity="bottom"
                 android:background="@null"
+                android:text="取消"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp" />
         </FrameLayout>
-    </androidx.appcompat.widget.Toolbar>
 
+    </androidx.appcompat.widget.Toolbar>
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyk.bookeeping.R;
-import com.wyk.bookeeping.bean.centerItem;
+import com.wyk.bookeeping.bean.CenterItem;
 
 import java.util.List;
 
@@ -21,9 +21,9 @@ public class CenterRecyclerViewAdapter extends RecyclerView.Adapter<CenterRecycl
     public static final int TYPE_SETTING = 5;
 
     private Context context;
-    private List<centerItem> centerItemList;
+    private List<CenterItem> centerItemList;
 
-    public CenterRecyclerViewAdapter(Context context, List<centerItem> centerItemList) {
+    public CenterRecyclerViewAdapter(Context context, List<CenterItem> centerItemList) {
         this.context = context;
         this.centerItemList = centerItemList;
     }
@@ -66,7 +66,7 @@ public class CenterRecyclerViewAdapter extends RecyclerView.Adapter<CenterRecycl
      */
     @Override
     public void onBindViewHolder(@NonNull CenterRecyclerViewAdapter.ViewHolder holder, int position) {
-        centerItem centerItem = centerItemList.get(position);
+        CenterItem centerItem = centerItemList.get(position);
         switch (centerItem.getItemType()){
             case TYPE_ICONS:
                 IconsHolder iconsHolder = (IconsHolder)holder;

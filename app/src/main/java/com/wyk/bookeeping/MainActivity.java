@@ -26,11 +26,12 @@ import com.next.easynavigation.constant.Anim;
 import com.next.easynavigation.utils.NavigationUtil;
 import com.next.easynavigation.view.EasyNavigationBar;
 import com.wyk.bookeeping.fragment.ExpenditureFragment;
-import com.wyk.bookeeping.fragment.FirstFragment;
+import com.wyk.bookeeping.fragment.BillFragment;
 import com.wyk.bookeeping.fragment.CenterFragment;
 import com.wyk.bookeeping.fragment.IncomeFragment;
 import com.wyk.bookeeping.fragment.SecondFragment;
 import com.wyk.bookeeping.fragment.ThirdFragment;
+import com.wyk.bookeeping.utils.DBHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,9 +65,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        DBHelper.getInstance(this);
+
         navigationBar = findViewById(R.id.navigationBar);
 
-        fragments.add(new FirstFragment());
+        fragments.add(new BillFragment());
         fragments.add(new SecondFragment());
         fragments.add(new ThirdFragment());
         fragments.add(new CenterFragment());

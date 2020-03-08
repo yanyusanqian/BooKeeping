@@ -23,7 +23,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.CenterRecyclerViewAdapter;
 import com.wyk.bookeeping.adpter.TestAdapter;
-import com.wyk.bookeeping.bean.centerItem;
+import com.wyk.bookeeping.bean.CenterItem;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class CenterFragment extends Fragment {
     private AppBarLayout appbar;
     private TextView textView;
 
-    private List<centerItem> centerItemList;
-    private centerItem centerItem;
+    private List<CenterItem> centerItemList;
+    private CenterItem centerItem;
     private CenterRecyclerViewAdapter centerRecyclerViewAdapter;
     @Nullable
     @Override
@@ -70,22 +70,22 @@ public class CenterFragment extends Fragment {
                 centerItemList.add(centerItem);
             }
         }*/
-        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_ICONS, 1);
+        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_ICONS, 1);
         centerItemList.add(centerItem);
 
-        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_BILL, 5);
+        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_BILL, 5);
         centerItem.setString("type2");
         centerItemList.add(centerItem);
 
-        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_BUDGET, 5);
+        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_BUDGET, 5);
         centerItem.setString("type3");
         centerItemList.add(centerItem);
 
-        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_COMMONFUNCTIONS, 5);
+        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_COMMONFUNCTIONS, 5);
         centerItem.setString("type4");
         centerItemList.add(centerItem);
 
-        centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_SETTING, 5);
+        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_SETTING, 5);
         centerItem.setString("type5");
         centerItemList.add(centerItem);
     }

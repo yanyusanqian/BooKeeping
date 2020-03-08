@@ -1,18 +1,18 @@
 package com.wyk.bookeeping.bean;
 
-public class centerItem {
+public class CenterItem {
     private int itemType;
     private int spanSize;
     private String string;
     public boolean isShow;
     public int count;
 
-    public centerItem(int itemType, int spanSize) {
+    public CenterItem(int itemType, int spanSize) {
         this.itemType = itemType;
         this.spanSize = spanSize;
     }
 
-    public centerItem(int itemType, int spanSize, String string) {
+    public CenterItem(int itemType, int spanSize, String string) {
         this.itemType = itemType;
         this.spanSize = spanSize;
         this.string = string;

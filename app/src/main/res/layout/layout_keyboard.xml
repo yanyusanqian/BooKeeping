@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linear"
+    android:layout_width="match_parent"
+    android:layout_height="280dp"
+    android:background="@color/gray_qian"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_dan" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/pre1" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="备注:" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="25dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="点击写备注"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/text_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center"
+                    android:text="1.00"
+                    android:textSize="26sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <TableLayout
+        android:id="@+id/tablelayout"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:divider="@drawable/table_v_divider"
+        android:orientation="vertical"
+        android:showDividers="middle|beginning|end">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_59"
+            android:divider="@drawable/table_h_divider"
+            android:orientation="horizontal"
+            android:showDividers="middle">
+
+            <TextView
+                android:id="@+id/kb_tv_1"
+                style="@style/keyboard_text_style"
+                android:layout_height="@dimen/dp_59"
+                android:text="1" />
+
+            <TextView
+                android:id="@+id/kb_tv_2"
+                style="@style/keyboard_text_style"
+                android:text="2" />
+
+            <TextView
+                android:id="@+id/kb_tv_3"
+                style="@style/keyboard_text_style"
+                android:text="3" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="@dimen/dp_59"
+                android:layout_weight="1"></LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_59"
+            android:divider="@drawable/table_h_divider"
+            android:orientation="horizontal"
+            android:showDividers="middle">
+
+            <TextView
+                android:id="@+id/kb_tv_4"
+                style="@style/keyboard_text_style"
+                android:text="4" />
+
+            <TextView
+                android:id="@+id/kb_tv_5"
+                style="@style/keyboard_text_style"
+                android:text="5" />
+
+            <TextView
+                android:id="@+id/kb_tv_6"
+                style="@style/keyboard_text_style"
+                android:text="6" />
+
+            <TextView
+                android:id="@+id/kb_tv_add"
+                style="@style/keyboard_text_style"
+                android:text="+" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_59"
+            android:divider="@drawable/table_h_divider"
+            android:orientation="horizontal"
+            android:showDividers="middle">
+
+            <TextView
+                android:id="@+id/kb_tv_7"
+                style="@style/keyboard_text_style"
+                android:text="7" />
+
+            <TextView
+                android:id="@+id/kb_tv_8"
+                style="@style/keyboard_text_style"
+                android:text="8" />
+
+            <TextView
+                android:id="@+id/kb_tv_9"
+                style="@style/keyboard_text_style"
+                android:text="9" />
+
+            <TextView
+                android:id="@+id/kb_tv_sub"
+                style="@style/keyboard_text_style"
+                android:text="-" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dp_59"
+            android:divider="@drawable/table_h_divider"
+            android:orientation="horizontal"
+            android:showDividers="middle">
+
+            <TextView
+                style="@style/keyboard_text_style"
+                android:text="." />
+
+            <TextView
+                android:id="@+id/kb_tv_0"
+                style="@style/keyboard_text_style"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/kb_tv_del"
+                style="@style/keyboard_text_style"
+                android:text="删除"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/kb_tv_done"
+                style="@style/keyboard_text_style"
+                android:text="完成" />
+        </TableRow>
+
+    </TableLayout>
+</LinearLayout>

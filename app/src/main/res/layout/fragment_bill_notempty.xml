@@ -1,114 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorLavender"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="BooKeeping"
-            android:textSize="18sp"
             android:layout_gravity="center"
-            android:textColor="@color/colorWrite"
             android:gravity="center"
-        />
+            android:text="BooKeeping"
+            android:textColor="@color/colorWrite"
+            android:textSize="18sp" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:background="@color/colorLavender"
         android:orientation="horizontal"
         android:paddingTop="5dp">
+
         <LinearLayout
+            android:id="@+id/bill_mouth_chose"
             android:layout_width="100dp"
             android:layout_height="75dp"
             android:orientation="vertical">
+
             <TextView
+                android:id="@+id/bill_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textColor="@color/colorWrite"
+                android:layout_marginBottom="5dp"
                 android:text="2020年"
-                android:layout_marginBottom="5dp"/>
+                android:textColor="@color/colorWrite" />
+
             <LinearLayout
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/bill_mouth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="02"
+                    android:textColor="@color/colorWrite"
+                    android:textSize="26sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="月"
                     android:textColor="@color/colorWrite"
-                    android:textSize="26sp"
-                    android:text="02"/>
+                    android:textSize="18sp" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="▼"
                     android:textColor="@color/colorWrite"
-                    android:textSize="18sp"
-                    android:text="月"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/colorWrite"
-                    android:textSize="20sp"
-                    android:text="▼"/>
+                    android:textSize="20sp" />
 
             </LinearLayout>
         </LinearLayout>
+
         <View
             android:layout_width="1dp"
             android:layout_height="35dp"
-            android:background="@color/colorWrite"
+            android:layout_marginTop="22dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="22dp"/>
+            android:background="@color/colorWrite" />
+
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorWrite"
+                android:layout_marginBottom="12dp"
                 android:text="收入"
-                android:layout_marginBottom="12dp"/>
+                android:textColor="@color/colorWrite" />
+
             <TextView
+                android:id="@+id/bill_income"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="0.00"
                 android:textColor="@color/colorWrite"
-                android:textSize="20sp"
-                android:text="0.00"/>
+                android:textSize="20sp" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorWrite"
+                android:layout_marginBottom="12dp"
                 android:text="支出"
-                android:layout_marginBottom="12dp"/>
+                android:textColor="@color/colorWrite" />
+
             <TextView
+                android:id="@+id/bill_expenditure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="0.00"
                 android:textColor="@color/colorWrite"
-                android:textSize="20sp"
-                android:text="1.00"/>
+                android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="30dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="02"/>
-    </LinearLayout>
+
+    <com.yanzhenjie.recyclerview.SwipeRecyclerView
+        android:id="@+id/bill_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

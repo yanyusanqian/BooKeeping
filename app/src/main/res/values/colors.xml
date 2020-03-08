@@ -6,7 +6,9 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorLavender">#8E6CE7</color>
     <color name="colorDarkpurple">#8A2BE2</color>
-
+    <color name="gray_qian">#F3F3F3</color>
+    <color name="gray_dan">#D0D0D0</color>
+    <color name="red_pressed">#FF6666</color>
 
     <color name="transparent">#00000000</color><!--透明色 -->   
     <color name="white">#FFFFFF</color><!--白色 -->   
@@ -64,7 +66,7 @@
     <color name="plum">#DDA0DD</color><!--洋李色 -->   
     <color name="gainsboro">#DCDCDC</color><!--淡灰色 -->   
     <color name="crimson">#DC143C</color><!--暗深红色 -->   
-    <color name="palevioletred">#DB7093</color><!--苍紫罗兰色 -->   
+    <color name="palevioletred">#DB7093</color><!--苍紫罗兰色 -->  
     <color name="goldenrod">#DAA520</color><!--金麒麟色 -->   
     <color name="orchid">#DA70D6</color><!--淡紫色 -->   
     <color name="thistle">#D8BFD8</color><!--蓟色 -->   
