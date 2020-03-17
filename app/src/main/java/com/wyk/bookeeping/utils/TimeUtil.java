@@ -2,8 +2,11 @@ package com.wyk.bookeeping.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author luo
@@ -274,6 +277,7 @@ public class TimeUtil {
 
     /**
      * 获取date在一年中的天数
+     *
      * @param date
      * @return
      */
@@ -285,6 +289,7 @@ public class TimeUtil {
 
     /**
      * 获取date在一月中的天数
+     *
      * @param date
      * @return
      */
@@ -296,6 +301,7 @@ public class TimeUtil {
 
     /**
      * 获取date中的月份，从0开始
+     *
      * @param date
      * @return
      */
@@ -312,10 +318,11 @@ public class TimeUtil {
      * @return
      */
     public static String getNowDate() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd日   HH:mm");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date curDate = new Date();//获取当前时间
         return formatter.format(curDate);
     }
+
 
     public static int getNowDateHour() {
         Calendar calendar = Calendar.getInstance();
@@ -324,6 +331,7 @@ public class TimeUtil {
 
     /**
      * 获取当前月份，月份从0开始
+     *
      * @return
      */
     public static int getNowDateMonth() {
@@ -331,8 +339,19 @@ public class TimeUtil {
         return calendar.get(Calendar.MONTH);
     }
 
+    public static String getNowDateMonth_String() {
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH)+1;
+        if(month<10){
+            return "0"+month;
+        }
+        return ""+month;
+
+    }
+
     /**
      * 获取当前年份
+     *
      * @return
      */
     public static int getNowDateYear() {
@@ -345,6 +364,14 @@ public class TimeUtil {
         return calendar.get(Calendar.MINUTE);
     }
 
+    /**
+     * 获取当前日期在一年中的哪一个轴
+     * 一年有52个周，该函数的取值范围是1-52
+     * 所以当一年中最后的几天超过52周，进入第53周时，将以下一年的第一周来计算
+     *
+     * @param date
+     * @return 返回当前日期在一年中的哪一个周
+     */
     public static int getWeekOfYear(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -370,12 +397,18 @@ public class TimeUtil {
      * @param date
      * @return
      */
-    public static int getMonthOfYear(Date date) {
+    public static int getMonth(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar.get(Calendar.MONTH);
     }
 
+    /**
+     * 获取传入日期的年份
+     *
+     * @param date
+     * @return
+     */
     public static int getYear(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -457,6 +490,72 @@ public class TimeUtil {
             formater = null;
         }
         return result;
+    }
+
+    public static List<String> getBetweenDateList_week(Map<String, String> map) {
+        Date maxdate = TimeUtil.string2Date(map.get("MAX"), "yyyy-MM-dd");//最近日期
+        Date mindate = TimeUtil.string2Date(map.get("MIN"), "yyyy-MM-dd");//最远日期
+        int maxweek = TimeUtil.getWeekOfYear(maxdate);
+        int minweek = TimeUtil.getWeekOfYear(mindate);
+        int maxyear = TimeUtil.getYear(maxdate);
+        int minyear = TimeUtil.getYear(mindate);
+        List<String> list = new ArrayList<>();
+        if (maxyear != minyear) {
+            for (int i = 1; i <= maxweek; i++) {
+                if (i < 10)
+                    list.add("0" + i + "周");
+                else
+                    list.add(i + "周");
+            }
+        }else{
+            for (int i = minweek; i <= maxweek; i++) {
+                if (i < 10)
+                    list.add("0" + i + "周");
+                else
+                    list.add(i + "周");
+            }
+        }
+        return list;
+    }
+
+    public  static List<String> getBetweenDateList_month(Map<String,String> map){
+        Date maxdate = TimeUtil.string2Date(map.get("MAX"), "yyyy-MM-dd");//最近日期
+        Date mindate = TimeUtil.string2Date(map.get("MIN"), "yyyy-MM-dd");//最远日期
+        int maxmonth = TimeUtil.getMonth(maxdate);
+        int minmonth = TimeUtil.getMonth(mindate);
+        int maxyear = TimeUtil.getYear(maxdate);
+        int minyear = TimeUtil.getYear(mindate);
+
+        List<String> list = new ArrayList<>();
+        if (maxyear != minyear) {
+            for (int i = 1; i <= maxmonth; i++) {
+                if (i < 10)
+                    list.add("0" + i + "月");
+                else
+                    list.add(i + "月");
+            }
+        }else{
+            for (int i = minmonth; i <= maxmonth; i++) {
+                if (i < 10)
+                    list.add("0" + i + "月");
+                else
+                    list.add(i + "月");
+            }
+        }
+        return list;
+    }
+
+    public  static List<String> getBetweenDateList_year(Map<String,String> map){
+        Date maxdate = TimeUtil.string2Date(map.get("MAX"), "yyyy-MM-dd");//最近日期
+        Date mindate = TimeUtil.string2Date(map.get("MIN"), "yyyy-MM-dd");//最远日期
+        int maxyear = TimeUtil.getYear(maxdate);
+        int minyear = TimeUtil.getYear(mindate);
+
+        List<String> list = new ArrayList<>();
+        for(int i = minyear;i<maxyear;i++){
+            list.add(i+"年");
+        }
+        return list;
     }
 
 }

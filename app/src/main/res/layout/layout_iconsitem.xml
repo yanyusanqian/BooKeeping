@@ -5,14 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
+
     >
-    <ImageView
-        android:src="@drawable/pre1"
-        android:id="@+id/imageview"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+    <LinearLayout
+        android:id="@+id/background_check"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:gravity="center"
         android:layout_gravity="center"
-        />
+        android:background="@drawable/icons_not_selected">
+        <ImageView
+            android:src="@drawable/pre1"
+            android:id="@+id/imageview"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            />
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/textview"

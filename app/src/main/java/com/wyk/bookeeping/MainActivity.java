@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -25,11 +26,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.next.easynavigation.constant.Anim;
 import com.next.easynavigation.utils.NavigationUtil;
 import com.next.easynavigation.view.EasyNavigationBar;
+import com.wyk.bookeeping.adpter.MyFragmentAdapter;
 import com.wyk.bookeeping.fragment.ExpenditureFragment;
 import com.wyk.bookeeping.fragment.BillFragment;
 import com.wyk.bookeeping.fragment.CenterFragment;
 import com.wyk.bookeeping.fragment.IncomeFragment;
-import com.wyk.bookeeping.fragment.SecondFragment;
+import com.wyk.bookeeping.fragment.ChartFragment;
 import com.wyk.bookeeping.fragment.ThirdFragment;
 import com.wyk.bookeeping.utils.DBHelper;
 
@@ -39,9 +41,9 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private String[] tabText = {"明细", "图表", "记账", "社区", "我的"};
     //未选中icon
-    private int[] normalIcon = {R.drawable.pre1, R.drawable.pre1, R.drawable.pre1, R.drawable.pre1, R.drawable.pre1};
+    private int[] normalIcon = {R.drawable.n_bill, R.drawable.n_chart, R.drawable.s_add, R.drawable.n_star, R.drawable.n_me};
     //选中时icon
-    private int[] selectIcon = {R.drawable.pre1, R.drawable.pre1, R.drawable.pre1, R.drawable.pre1, R.drawable.pre1};
+    private int[] selectIcon = {R.drawable.s_bill, R.drawable.s_chart, R.drawable.s_add, R.drawable.s_star, R.drawable.s_me};
 
     private List<Fragment> fragments = new ArrayList<>();
 
@@ -70,17 +72,20 @@ public class MainActivity extends AppCompatActivity {
         navigationBar = findViewById(R.id.navigationBar);
 
         fragments.add(new BillFragment());
-        fragments.add(new SecondFragment());
+        fragments.add(new ChartFragment());
         fragments.add(new ThirdFragment());
         fragments.add(new CenterFragment());
 
         navigationBar.titleItems(tabText)
                 .normalIconItems(normalIcon)
                 .selectIconItems(selectIcon)
+                .iconSize(30)     //Tab图标大小
+                .normalTextColor(Color.parseColor("#707070"))   //Tab未选中时字体颜色
+                .selectTextColor(Color.parseColor("#8A2BE2"))   //Tab选中时字体颜色
                 .fragmentList(fragments)
                 .fragmentManager(getSupportFragmentManager())
                 .addLayoutRule(EasyNavigationBar.RULE_BOTTOM)
-                .addIconSize(36)    //中间加号图片的大小
+                .addIconSize(45)    //中间加号图片的大小
                 .addLayoutBottom(100)
                 .addLayoutHeight(100)
                 .onTabClickListener(new EasyNavigationBar.OnTabClickListener() {
@@ -138,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentList.add(new IncomeFragment());
         fragmentTitles.add("支出");
         fragmentTitles.add("收入");
-        MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(),fragmentList,fragmentTitles, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(),fragmentList,fragmentTitles, this, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         viewpager_content.setAdapter(adapter);
     }
 

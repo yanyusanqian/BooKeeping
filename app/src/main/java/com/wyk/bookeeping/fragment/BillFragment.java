@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +25,9 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.BillListAdapter;
 import com.wyk.bookeeping.bean.Account;
+import com.wyk.bookeeping.bean.DataStatus;
+import com.wyk.bookeeping.livedate.AccountViewModel;
+import com.wyk.bookeeping.livedate.DataStatusLiveData;
 import com.wyk.bookeeping.utils.DBHelper;
 import com.wyk.bookeeping.utils.RcyclerUtils;
 import com.wyk.bookeeping.utils.TimeUtil;
@@ -39,12 +44,13 @@ import java.util.List;
 
 public class BillFragment extends Fragment {
     private SQLiteDatabase db;
-    private List<Account> accountList;
+    private List<Account> accountList, accountList_recycler;
     private LinearLayout bill_mouth_chose;
-    private TextView bill_income, bill_expenditure, bill_mouth,bill_year;
+    private TextView bill_income, bill_expenditure, bill_month, bill_year;
     private BillListAdapter billListAdapter;
     private SwipeRecyclerView bill_recyclerview;
-    private int now_mouth;
+    private String now_month,now_year;
+    private AccountViewModel accountViewModel;
 
     @Nullable
     @Override
@@ -55,21 +61,44 @@ public class BillFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         initView();
         db = DBHelper.getInstance(getActivity()).getWritableDatabase();
-        now_mouth = TimeUtil.getNowDateMonth() + 1;
-        getFirstAccountList(now_mouth);
-        accountList = RcyclerUtils.listAddType(accountList);
+        now_month = TimeUtil.getNowDateMonth_String();
+        now_year = TimeUtil.getNowDateYear()+"";
+        getFirstAccountList(now_year,now_month);
+
+        accountList_recycler = RcyclerUtils.listAddType(accountList);
+        Log.i("TAG3", accountList_recycler.toString());
+        DataStatus dataStatus = new DataStatus();
+        dataStatus.setAccountList(accountList);
+        dataStatus.setAccountList_recycler(accountList_recycler);
+        accountViewModel.getCurrentName().setValue(dataStatus);
+
         initRecyclerView();
-        initToolBarDate();
+        initToolBarDate(TimeUtil.getNowDateYear() + "年");
         initChangeDate();
+
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        accountViewModel.getCurrentName().observe(getActivity(), new Observer<DataStatus>() {
+            @Override
+            public void onChanged(DataStatus dataStatus) {
+                accountList = dataStatus.getAccountList();
+                Log.i("TAG1", accountList.toString());
+                accountList_recycler = dataStatus.getAccountList_recycler();
+                Log.i("TAG2", accountList_recycler.toString());
+                if (accountList_recycler != null)
+                    billListAdapter.notifyDataSetChanged(accountList_recycler);
+            }
+        });
     }
 
-    private void initToolBarDate() {
+    private void initToolBarDate(String year) {
         float mouth_expenditure = 0;
         float mouth_income = 0;
         for (int i = 0; i < accountList.size(); i++) {
-            if(accountList.get(i).getView_type() !=1){
+            if (accountList.get(i).getView_type() != 1) {
                 if (accountList.get(i).getInexType() == 1) {
                     mouth_expenditure += accountList.get(i).getCount();
                 } else {
@@ -78,27 +107,32 @@ public class BillFragment extends Fragment {
             }
         }
 
-        if (now_mouth < 10) {
-            bill_mouth.setText("0" + now_mouth);
-        } else {
-            bill_mouth.setText(now_mouth);
-        }
-        bill_year.setText(TimeUtil.getNowDateYear()+"年");
+            bill_month.setText(now_month);
+            bill_month.setText(now_month);
+        bill_year.setText(year);
 
         bill_income.setText(mouth_income + "");
         bill_expenditure.setText(mouth_expenditure + "");
     }
 
-    private void initChangeDate(){
+    private void initChangeDate() {
         bill_mouth_chose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("HERE click","22222222");
+                Log.i("HERE click", "22222222");
                 TimePickerView pvTime = new TimePickerBuilder(getActivity(), new OnTimeSelectListener() {
                     @Override
                     public void onTimeSelect(Date date, View v) {
-                        Log.i("HERE click","1111111111");
+                        Log.i("HERE click", "1111111111");
                         Toast.makeText(getActivity(), TimeUtil.date2String(date, "YYYY年MM月"), Toast.LENGTH_SHORT).show();
+                        now_month = TimeUtil.date2String(date, "MM");
+                        getFirstAccountList(TimeUtil.date2String(date,"YYYY"),TimeUtil.date2String(date, "MM"));
+                        accountList_recycler = RcyclerUtils.listAddType(accountList);
+                        DataStatus dataStatus = new DataStatus();
+                        dataStatus.setAccountList(accountList);
+                        dataStatus.setAccountList_recycler(accountList_recycler);
+                        accountViewModel.getCurrentName().setValue(dataStatus);
+                        initToolBarDate(TimeUtil.date2String(date, "YYYY年"));
                     }
                 })
                         .setType(new boolean[]{true, true, false, false, false, false})
@@ -108,7 +142,7 @@ public class BillFragment extends Fragment {
                         .setTitleColor(Color.BLACK)//标题文字颜色
                         .setSubmitColor(Color.BLACK)//确定按钮文字颜色
                         .setCancelColor(Color.BLACK)
-                        .setLabel("年","月","","","","")
+                        .setLabel("年", "月", "", "", "", "")
                         .build();
                 pvTime.show();
             }
@@ -138,12 +172,13 @@ public class BillFragment extends Fragment {
 
         billListAdapter = new BillListAdapter(getActivity());
         bill_recyclerview.setAdapter(billListAdapter);
-        billListAdapter.notifyDataSetChanged(accountList);
+        Log.i("TAG4", accountList_recycler.toString());
+//        billListAdapter.notifyDataSetChanged(accountList_recycler);
     }
 
     private void initView() {
         bill_mouth_chose = (LinearLayout) getActivity().findViewById(R.id.bill_mouth_chose);
-        bill_mouth = (TextView) getActivity().findViewById(R.id.bill_mouth);
+        bill_month = (TextView) getActivity().findViewById(R.id.bill_month);
         bill_year = (TextView) getActivity().findViewById(R.id.bill_year);
         bill_income = (TextView) getActivity().findViewById(R.id.bill_income);
         bill_expenditure = (TextView) getActivity().findViewById(R.id.bill_expenditure);
@@ -155,10 +190,11 @@ public class BillFragment extends Fragment {
     /**
      * 分页查询
      */
-    private void getFirstAccountList(int mouth) {
+    private void getFirstAccountList(String year,String month) {
         accountList = new ArrayList<>();
-        Log.i("HERE mouth", "" + mouth);
-        String sql = "SELECT * FROM account WHERE strftime('%m', time) = '0" + mouth + "'";
+        Log.i("HERE mouth", "" + month);
+        String sql = "select * from account where strftime('%Y-%m',time)='" + year+"-"+month + "' order by time desc";
+//        String sql = "SELECT * FROM account WHERE strftime('%m', time) = '0" + mouth + "'";
         Cursor cursor = db.rawQuery(sql, null);
         if (cursor.getCount() != 0) {
             while (cursor.moveToNext()) {
@@ -170,6 +206,10 @@ public class BillFragment extends Fragment {
                 accountList.add(account);
             }
         }
+        Log.i("TAG5", accountList.toString());
+        /*DataStatus dataStatus = new DataStatus();
+        dataStatus.setAccountList(accountList);
+        accountViewModel.getCurrentName().setValue(dataStatus);*/
     }
 
 
@@ -187,19 +227,30 @@ public class BillFragment extends Fragment {
                 /*Toast.makeText(getActivity(), "list第" + position + "; 右侧菜单第" + menuPosition, Toast.LENGTH_SHORT)
                         .show();*/
 
-                if(accountList.get(position).getView_type() == 1){
+                if (accountList_recycler.get(position).getView_type() == 1) {
                     Toast.makeText(getActivity(), "暂不支持按日删除账单，敬请期待", Toast.LENGTH_SHORT)
                             .show();
-                }else{
-                    Long id = accountList.get(position).getId();
-                    int mouth =TimeUtil.getDateMonth(accountList.get(position).getTime())+1;
-                    db.delete("account","_id = ?",new String[]{String.valueOf(id)});
-                    getFirstAccountList(mouth);
-                    Log.i("LIST Fragment1",accountList.toString());
-                    accountList = RcyclerUtils.listAddType(accountList);
-                    Log.i("LIST Fragment2",accountList.toString());
-                    billListAdapter.notifyDataSetChanged(accountList);
-                    initToolBarDate();
+                } else {
+                    Long id = accountList_recycler.get(position).getId();
+                    int mouth = TimeUtil.getDateMonth(accountList_recycler.get(position).getTime()) + 1;
+                    int year = TimeUtil.getYear(accountList_recycler.get(position).getTime());
+                    db.delete("account", "_id = ?", new String[]{String.valueOf(id)});
+                    if (mouth < 10) {
+                        getFirstAccountList(year+"","0" + mouth);
+                    } else {
+                        getFirstAccountList(year+"","" + mouth);
+                    }
+                    Log.i("TAG6", accountList.toString());
+                    Log.i("LIST Fragment1", accountList_recycler.toString());
+                    accountList_recycler = RcyclerUtils.listAddType(accountList);
+                    Log.i("LIST Fragment2", accountList_recycler.toString());
+                    Log.i("TAG7", accountList_recycler.toString());
+//                    billListAdapter.notifyDataSetChanged(accountList_recycler);
+                    DataStatus dataStatus = new DataStatus();
+                    dataStatus.setAccountList(accountList);
+                    dataStatus.setAccountList_recycler(accountList_recycler);
+                    accountViewModel.getCurrentName().setValue(dataStatus);
+                    initToolBarDate(year+"");
                 }
             }
         }

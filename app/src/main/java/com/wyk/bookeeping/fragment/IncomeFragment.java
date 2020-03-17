@@ -43,7 +43,7 @@ import java.util.Map;
 public class IncomeFragment extends Fragment {
     private RecyclerView gridview_Income;
     private IconsAdpter iconsAdpter;
-    private List<Icons> data_list;
+    private List<Icons> data_list,data_list_s;
     private int postion;
     private PopupLayout popupLayout;
     private EditText editText;
@@ -62,7 +62,7 @@ public class IncomeFragment extends Fragment {
         data_list = new ArrayList<>();
         //获取数据
         getData();
-        iconsAdpter = new IconsAdpter(getActivity(),data_list);
+        iconsAdpter = new IconsAdpter(getActivity(),data_list,data_list_s);
         iconsAdpter.setOnMyItemClickListener(new IconsAdpter.OnMyItemClickListener() {
             @Override
             public void myClick(View v, int pos) {
@@ -102,16 +102,18 @@ public class IncomeFragment extends Fragment {
 
     public void getData(){
         String json = SpUtils.getString(getActivity(),"InIconsList");
+        String json_s = SpUtils.getString(getActivity(),"InSIconsList");
         if(!TextUtils.isEmpty(json)){
             Type type = new TypeToken<List<Icons>>(){}.getType();
             data_list= new Gson().fromJson(json, type);
+            data_list_s= new Gson().fromJson(json_s, type);
         }else{
              int[] in_icon = {
-                    R.drawable.pre1, R.drawable.pre1, R.drawable.pre1, R.drawable.pre1,
-                    R.drawable.pre1, R.drawable.pre1};
+                     R.drawable.n_wages, R.drawable.n_parttime, R.drawable.n_manage, R.drawable.n_cashgift,
+                     R.drawable.n_bonus, R.drawable.n_setting};
              String[] in_iconName = {
-                    "工资", "兼职", "理财", "礼金",
-                    "其它", "设置"};
+                     "工资", "兼职", "理财", "礼金",
+                     "其它", "设置"};
 
             for (int i = 0; i < in_icon.length; i++) {
                 Icons icons = new Icons(in_icon[i], in_iconName[i]);

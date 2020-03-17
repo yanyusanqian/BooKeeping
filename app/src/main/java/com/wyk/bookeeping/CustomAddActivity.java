@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.wyk.bookeeping.adpter.MyFragmentAdapter;
 import com.wyk.bookeeping.fragment.ExpenditureFragment;
 import com.wyk.bookeeping.fragment.IncomeFragment;
 
@@ -72,7 +73,7 @@ public class CustomAddActivity extends AppCompatActivity {
         fragmentList.add(new IncomeFragment());
         fragmentTitles.add("支出");
         fragmentTitles.add("收入");
-        MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(),fragmentList,fragmentTitles, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        MyFragmentAdapter adapter = new MyFragmentAdapter(getSupportFragmentManager(),fragmentList,fragmentTitles, this,FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         viewpager_content.setAdapter(adapter);
     }
 

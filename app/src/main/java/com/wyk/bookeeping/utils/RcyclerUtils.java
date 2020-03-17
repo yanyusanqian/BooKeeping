@@ -44,7 +44,7 @@ public class RcyclerUtils {
                             title.get(title.size() - 1).put("ex", it_expenditure);
                             title.get(title.size() - 1).put("in", it_income + count);
                         }
-                        if (num == 1) {
+                        if (num == 1&&list.size()!=1) {
                             map = new HashMap<>();
                             map.put("adress", num + sum + title.size());
                             title.add(map);

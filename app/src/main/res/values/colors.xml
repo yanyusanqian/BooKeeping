@@ -9,6 +9,7 @@
     <color name="gray_qian">#F3F3F3</color>
     <color name="gray_dan">#D0D0D0</color>
     <color name="red_pressed">#FF6666</color>
+    <color name="purple_dan">#C0ACF3</color>
 
     <color name="transparent">#00000000</color><!--透明色 -->   
     <color name="white">#FFFFFF</color><!--白色 -->   

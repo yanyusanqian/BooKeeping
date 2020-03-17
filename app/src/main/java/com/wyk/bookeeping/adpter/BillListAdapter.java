@@ -16,12 +16,7 @@ import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.bean.Account;
 import com.wyk.bookeeping.utils.TimeUtil;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class BillListAdapter extends BaseAdapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_TITLE = 1;

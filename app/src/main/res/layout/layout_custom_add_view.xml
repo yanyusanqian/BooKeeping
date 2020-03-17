@@ -36,10 +36,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_gravity="bottom"
+                    app:tabRippleColor = "@android:color/transparent"
                     android:background="@color/colorLavender"
                     app:tabIndicatorColor="#FFFFFF"
                     app:tabSelectedTextColor="#FFFFFF"
-                    app:tabTextColor="#000000" />
+                    app:tabTextColor="#FFFFFF" />
             </LinearLayout>
         </LinearLayout>
 

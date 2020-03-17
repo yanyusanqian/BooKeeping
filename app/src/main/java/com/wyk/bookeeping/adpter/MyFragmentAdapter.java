@@ -1,6 +1,10 @@
-package com.wyk.bookeeping;
+package com.wyk.bookeeping.adpter;
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,21 +12,20 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import java.util.ArrayList;
+import com.wyk.bookeeping.R;
+
 import java.util.List;
 
 public class MyFragmentAdapter extends FragmentPagerAdapter {
 
-    private  List<Fragment> fragmentList = new ArrayList<>();
-    private  List<String> fragmentTitles = new ArrayList<>();
-    public MyFragmentAdapter(@NonNull FragmentManager fm, List<Fragment> fragmentList, int behavior) {
-        super(fm, behavior);
-        this.fragmentList = fragmentList;
-    }
-    public MyFragmentAdapter(FragmentManager fm, List<Fragment> fragmentList, List<String> fragmentTitles, int behavior){
+    private  List<Fragment> fragmentList;
+    private  List<String> fragmentTitles;
+    private Context mContext;
+    public MyFragmentAdapter(FragmentManager fm, List<Fragment> fragmentList, List<String> fragmentTitles, Context context, int behavior){
         super(fm,behavior);
         this.fragmentList = fragmentList;
         this.fragmentTitles = fragmentTitles;
+        this.mContext= context;
     }
 
     @NonNull
@@ -49,5 +52,12 @@ public class MyFragmentAdapter extends FragmentPagerAdapter {
         }else{
             return "";
         }
+    }
+
+    public View getTabView(int position) {
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_tablayout, null);
+        TextView textView=view.findViewById(R.id.tab_layout_text);
+        textView.setText(fragmentTitles.get(position));
+        return view;
     }
 }

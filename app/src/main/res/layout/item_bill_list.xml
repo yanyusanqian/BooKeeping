@@ -16,6 +16,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginRight="15dp"
             android:layout_marginBottom="10dp"
+            android:background="@drawable/icons_billlist"
             android:src="@drawable/pre1" />
 
         <LinearLayout
