@@ -1,10 +1,12 @@
 package com.wyk.bookeeping.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +23,7 @@ import com.wyk.bookeeping.livedate.AccountViewModel;
 import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +32,14 @@ public class WeekFragment extends Fragment {
 
     private AccountViewModel accountViewModel;
     private Map<String, String> map;
-    private FrameLayout not_emptyview, emptyview;
+    private LinearLayout not_emptyview;
+    private FrameLayout emptyview;
     private List<Fragment> fragmentList;
     private List<String> datelist;
-    private ViewPager month_viewpager;
+    private ViewPager week_viewpager;
 
     public static final int TYPE_WEEK = 1;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,34 +61,42 @@ public class WeekFragment extends Fragment {
     }
 
     private void initView() {
-        chart_date_tablayout = (TabLayout) getActivity().findViewById(R.id.chart_date_tablayout);
-        not_emptyview = (FrameLayout) getActivity().findViewById(R.id.not_emptyview);
-        emptyview = (FrameLayout) getActivity().findViewById(R.id.emptyview);
-        month_viewpager = (ViewPager) getActivity().findViewById(R.id.month_viewpager);
+        chart_date_tablayout = (TabLayout) getActivity().findViewById(R.id.chart_date_tablayout_week);
+        not_emptyview = (LinearLayout) getActivity().findViewById(R.id.week_not_emptyview);
+        emptyview = (FrameLayout) getActivity().findViewById(R.id.week_emptyview);
+        week_viewpager = (ViewPager) getActivity().findViewById(R.id.week_viewpager);
     }
 
     private void initChartData() {
-        if(map.isEmpty()){
-            not_emptyview.setVisibility(View.INVISIBLE);
+        if (map.isEmpty()) {
+            not_emptyview.setVisibility(View.GONE);
             emptyview.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             datelist = TimeUtil.getBetweenDateList_week(map);
             fragmentList = new ArrayList<>();
-            for(int i =0;i<datelist.size();i++){
+            for (int i = 0; i < datelist.size(); i++) {
                 //i 为对应time列表第几个
-                fragmentList.add(DateChartFragment.newInstance(TYPE_WEEK,datelist.get(i)));
+//                fragmentList.add(DateChartFragment.newInstance(TYPE_WEEK, datelist.get(i)));
+                fragmentList.add(new ThirdFragment());
             }
             MyFragmentAdapter myFragmentAdapter = new MyFragmentAdapter(
                     getChildFragmentManager(), fragmentList, datelist, getActivity(),
                     FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-            month_viewpager.setAdapter(myFragmentAdapter);
-            month_viewpager.setOffscreenPageLimit(1);
-            month_viewpager.setCurrentItem(0);
+            week_viewpager.setAdapter(myFragmentAdapter);
+            week_viewpager.setOffscreenPageLimit(1);
+            week_viewpager.setCurrentItem(0);
             if (datelist.size() < 6)
                 chart_date_tablayout.setTabMode(TabLayout.MODE_FIXED);
             else
                 chart_date_tablayout.setTabMode(TabLayout.MODE_SCROLLABLE);
-            chart_date_tablayout.setupWithViewPager(month_viewpager);
+            chart_date_tablayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    chart_date_tablayout.setupWithViewPager(week_viewpager);
+                }
+            });
+
+//            chart_date_tablayout.setupWithViewPager(month_viewpager);
         }
     }
 }

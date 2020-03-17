@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
-    <!--<shortcut
-        android:shortcutId="settings"
+    <shortcut
+        android:shortcutId="addbill"
         android:enabled="true"
-        android:icon="@drawable/icon"
+        android:icon="@drawable/s_add"
         android:shortcutShortLabel="@string/settings_short_name"
         android:shortcutLongLabel="@string/settings_long_name"
         android:shortcutDisabledMessage="@string/settings_disable_msg">
 
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="org.loader.shotcutsstatic"
-            android:targetClass="org.loader.shotcutsstatic.SettingsActivity" />
+            android:targetPackage="com.wyk.bookeeping"
+            android:targetClass="com.wyk.bookeeping.CustomAddActivity" />
         <categories android:name="android.shortcut.conversation"/>
-    </shortcut>-->
+    </shortcut>
 </shortcuts>

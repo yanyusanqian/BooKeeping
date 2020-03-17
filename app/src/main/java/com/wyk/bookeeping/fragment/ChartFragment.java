@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
@@ -83,15 +84,17 @@ public class ChartFragment extends Fragment {
     private void getMaxMinDate() {
         String sql = "SELECT Max(time),Min(time) FROM account";
         Cursor cursor = db.rawQuery(sql, null);
-        if (cursor.getCount() != 0) {
-            while (cursor.moveToNext()) {
-                Map<String,String> map = new HashMap<>();
-                map.put("MAX",cursor.getString(0));
-                map.put("MIN",cursor.getString(1));
-                accountViewModel.getDate().setValue(map);
-            }
+        cursor.moveToFirst();
+        Log.i("TAG44",cursor.getString(0)+"");
+        if(cursor.getString(0)!=null&&cursor.getString(1)!=null){
+            Map<String,String> map = new HashMap<>();
+            map.put("MAX",cursor.getString(0));
+            map.put("MIN",cursor.getString(1));
+            accountViewModel.getDate().setValue(map);
+        }else{
+            Map<String,String> map = new HashMap<>();
+            accountViewModel.getDate().setValue(map);
         }
-
     }
 
     private void initView() {

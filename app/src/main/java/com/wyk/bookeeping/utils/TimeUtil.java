@@ -1,5 +1,7 @@
 package com.wyk.bookeeping.utils;
 
+import android.util.Log;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -515,6 +517,7 @@ public class TimeUtil {
                     list.add(i + "周");
             }
         }
+        Log.i("TIME",list.toString());
         return list;
     }
 
@@ -552,7 +555,7 @@ public class TimeUtil {
         int minyear = TimeUtil.getYear(mindate);
 
         List<String> list = new ArrayList<>();
-        for(int i = minyear;i<maxyear;i++){
+        for(int i = minyear;i<=maxyear;i++){
             list.add(i+"年");
         }
         return list;

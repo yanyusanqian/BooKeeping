@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.wyk.bookeeping.livedate.AccountViewModel;
 import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +30,8 @@ public class MonthFragment extends Fragment {
     private TabLayout chart_date_tablayout;
     private AccountViewModel accountViewModel;
     private Map<String, String> map;
-    private FrameLayout not_emptyview, emptyview;
+    private FrameLayout emptyview;
+    private LinearLayout not_emptyview;
     private List<Fragment> fragmentList;
     private List<String> datelist;
     private ViewPager month_viewpager;
@@ -55,15 +58,15 @@ public class MonthFragment extends Fragment {
     }
 
     private void initView() {
-        chart_date_tablayout = (TabLayout) getActivity().findViewById(R.id.chart_date_tablayout);
-        not_emptyview = (FrameLayout) getActivity().findViewById(R.id.not_emptyview);
-        emptyview = (FrameLayout) getActivity().findViewById(R.id.emptyview);
+        chart_date_tablayout = (TabLayout) getActivity().findViewById(R.id.chart_date_tablayout_month);
+        not_emptyview = (LinearLayout) getActivity().findViewById(R.id.month_not_emptyview);
+        emptyview = (FrameLayout) getActivity().findViewById(R.id.month_emptyview);
         month_viewpager = (ViewPager) getActivity().findViewById(R.id.month_viewpager);
     }
 
     private void initChartData() {
         if(map.isEmpty()){
-            not_emptyview.setVisibility(View.INVISIBLE);
+            not_emptyview.setVisibility(View.GONE);
             emptyview.setVisibility(View.VISIBLE);
         }else{
             datelist = TimeUtil.getBetweenDateList_month(map);

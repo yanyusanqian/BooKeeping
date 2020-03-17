@@ -5,13 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:id="@+id/not_emptyview"
+    <LinearLayout
+        android:id="@+id/year_not_emptyview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/chart_date_tablayout"
+            android:id="@+id/chart_date_tablayout_year"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             app:tabIndicatorColor="@color/gray_qian"
@@ -20,14 +21,14 @@
             app:tabGravity="fill"
             app:tabMode="scrollable" />
         <androidx.viewpager.widget.ViewPager
-            android:id="@+id/month_viewpager"
+            android:id="@+id/year_viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-    </FrameLayout>
+    </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/emptyview"
+        android:id="@+id/year_emptyview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible">

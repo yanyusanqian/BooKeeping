@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import com.wyk.bookeeping.livedate.AccountViewModel;
 import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,12 +31,14 @@ public class YearFargment extends Fragment {
 
     private AccountViewModel accountViewModel;
     private Map<String, String> map;
-    private FrameLayout not_emptyview, emptyview;
+    private FrameLayout  emptyview;
+    private LinearLayout not_emptyview;
     private List<Fragment> fragmentList;
     private List<String> datelist;
     private ViewPager month_viewpager;
 
     public static final int TYPE_YEAR = 3;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,22 +60,22 @@ public class YearFargment extends Fragment {
     }
 
     private void initView() {
-        chart_date_tablayout = (TabLayout) getActivity().findViewById(R.id.chart_date_tablayout);
-        not_emptyview = (FrameLayout) getActivity().findViewById(R.id.not_emptyview);
-        emptyview = (FrameLayout) getActivity().findViewById(R.id.emptyview);
-        month_viewpager = (ViewPager) getActivity().findViewById(R.id.month_viewpager);
+        chart_date_tablayout = (TabLayout) getActivity().findViewById(R.id.chart_date_tablayout_year);
+        not_emptyview = (LinearLayout) getActivity().findViewById(R.id.year_not_emptyview);
+        emptyview = (FrameLayout) getActivity().findViewById(R.id.year_emptyview);
+        month_viewpager = (ViewPager) getActivity().findViewById(R.id.year_viewpager);
     }
 
     private void initChartData() {
-        if(map.isEmpty()){
-            not_emptyview.setVisibility(View.INVISIBLE);
+        if (map.isEmpty()) {
+            not_emptyview.setVisibility(View.GONE);
             emptyview.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             datelist = TimeUtil.getBetweenDateList_year(map);
             fragmentList = new ArrayList<>();
-            for(int i =0;i<datelist.size();i++){
+            for (int i = 0; i < datelist.size(); i++) {
                 //i 为对应time列表第几个
-                fragmentList.add(DateChartFragment.newInstance(TYPE_YEAR,datelist.get(i)));
+                fragmentList.add(DateChartFragment.newInstance(TYPE_YEAR, datelist.get(i)));
             }
             MyFragmentAdapter myFragmentAdapter = new MyFragmentAdapter(
                     getChildFragmentManager(), fragmentList, datelist, getActivity(),
