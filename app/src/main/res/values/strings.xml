@@ -5,4 +5,18 @@
     <string name="settings_short_name">记一笔</string>
     <string name="settings_long_name">记一笔</string>
     <string name="settings_disable_msg">此功能暂未开放</string>
+    <string name="login">登陆</string>
+    <string name="phone_number">手机号</string>
+    <string name="phone_hint">请输入手机号</string>
+    <string name="password">密码</string>
+    <string name="newpassword">新密码</string>
+    <string name="password_hint">请输入密码</string>
+    <string name="newpassword_hint">请输入新密码</string>
+    <string name="reset_password">重置密码</string>
+    <string name="verification_code">验证码</string>
+    <string name="verification_code_hint">请输入验证码</string>
+    <string name="verification_code_send">发送验证码</string>
+    <string name="register">注册</string>
+    <string name="forgot_password">忘记密码</string>
+
 </resources>

@@ -2,9 +2,10 @@ package com.wyk.bookeeping.fragment;
 
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +17,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.CenterRecyclerViewAdapter;
-import com.wyk.bookeeping.adpter.TestAdapter;
+import com.wyk.bookeeping.bean.Account;
 import com.wyk.bookeeping.bean.CenterItem;
+import com.wyk.bookeeping.bean.DataStatus;
+import com.wyk.bookeeping.livedata.AccountViewModel;
+import com.wyk.bookeeping.utils.DBHelper;
+import com.wyk.bookeeping.utils.SpUtils;
+import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -33,13 +41,14 @@ public class CenterFragment extends Fragment {
     private RecyclerView recyclerView_center;
     private Toolbar toolbar;
     private List<String> list;
-    private TestAdapter testAdapter;
     private AppBarLayout appbar;
-    private TextView textView;
+    private TextView textView,totaldays,total;
 
     private List<CenterItem> centerItemList;
     private CenterItem centerItem;
     private CenterRecyclerViewAdapter centerRecyclerViewAdapter;
+    private AccountViewModel accountViewModel;
+    private List<Account> accountList;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -49,43 +58,47 @@ public class CenterFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        initToolBar();
         initView();
+        initToolBar();
         initRecyclerViewItemData();
         initRecyclerView();
+        accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        accountViewModel.getCurrentName().observe(getActivity(), new Observer<DataStatus>() {
+            @Override
+            public void onChanged(DataStatus dataStatus) {
+                upDateTotal();
+                centerRecyclerViewAdapter.notifyDataSetChanged();
+            }
+        });
+
     }
+
+    private void upDateTotal(){
+        String num = DBHelper.getInstance(getActivity()).getAllAccountNum(getActivity());
+        total.setText(num);
+    }
+
+
 
     private void initRecyclerViewItemData() {
         centerItemList = new ArrayList<>();
-
-        /*String[] titleList = {"消息","定时提醒","类别设置","导出数据","设置"};
-        for(int i = 0;i<5;i++){
-            centerItem = new centerItem(centerRecyclerViewAdapter.TYPE_ICONS, 1,titleList[i]);
-            if (i % 2 == 0) {
-                centerItem.isShow = true;
-                centerItem.count = 6;
-            } else {
-                centerItem.isShow = false;
-                centerItem.count = 0;
-                centerItemList.add(centerItem);
-            }
-        }*/
-        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_ICONS, 1);
+        centerItem = new CenterItem(CenterRecyclerViewAdapter.TYPE_ICONS, 1);
         centerItemList.add(centerItem);
 
-        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_BILL, 5);
+        centerItem = new CenterItem(CenterRecyclerViewAdapter.TYPE_BILL, 5);
         centerItem.setString("type2");
         centerItemList.add(centerItem);
 
-        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_BUDGET, 5);
+        centerItem = new CenterItem(CenterRecyclerViewAdapter.TYPE_BUDGET, 5);
         centerItem.setString("type3");
         centerItemList.add(centerItem);
 
-        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_COMMONFUNCTIONS, 5);
+        centerItem = new CenterItem(CenterRecyclerViewAdapter.TYPE_COMMONFUNCTIONS, 5);
         centerItem.setString("type4");
         centerItemList.add(centerItem);
 
-        centerItem = new CenterItem(centerRecyclerViewAdapter.TYPE_SETTING, 5);
+        centerItem = new CenterItem(CenterRecyclerViewAdapter.TYPE_SETTING, 5);
         centerItem.setString("type5");
         centerItemList.add(centerItem);
     }
@@ -95,6 +108,7 @@ public class CenterFragment extends Fragment {
         recyclerView_center = (RecyclerView)getActivity().findViewById(R.id.recyclerView_center);
         recyclerView_center.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView_center.setAdapter(centerRecyclerViewAdapter);
+        recyclerView_center.addItemDecoration(new SpacesItemDecoration(20));
     }
     private void initView(){
         list  = new ArrayList<>();
@@ -102,9 +116,12 @@ public class CenterFragment extends Fragment {
             list.add("x:"+x);
         }
 
-        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar = (Toolbar) getActivity().findViewById(R.id.center_toolbar);
         appbar = (AppBarLayout) getActivity().findViewById(R.id.appbar);
         textView = (TextView) getActivity().findViewById(R.id.textview);
+        totaldays = (TextView) getActivity().findViewById(R.id.totaldays);
+        total = (TextView) getActivity().findViewById(R.id.total);
+
 
         final int alphaMaxOffset = dpToPx(130);
         toolbar.getBackground().mutate().setAlpha(0);
@@ -125,21 +142,29 @@ public class CenterFragment extends Fragment {
     }
 
     private void initToolBar() {
+        String FirstDate = SpUtils.getString(getActivity(),"FIRST_INSTALL_TIME");
+        String nowDate = TimeUtil.getNowDate();
+        if(!"".equals(FirstDate)){
+            String days = TimeUtil.getBetweenDays(FirstDate,nowDate);
+            if(!TextUtils.isEmpty(days)){
+                totaldays.setText(days);
+            }
+        }
+
         try {
-            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+            Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.center_toolbar);
             if (toolbar != null) {
                 // 沉浸模式
                 int statusBarHeight = getStatusBarHeight();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     openAndroidLStyle();
-
                     toolbar.setPadding(0, statusBarHeight, 0, 0);
                     toolbar.getLayoutParams().height = dpToPx(46) + statusBarHeight;
-                }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-                    /*window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                    window.setStatusBarColor(activity.getResources().getColor(colorId));*/
-                }
+                }/*else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    getActivity().getWindow().setStatusBarColor(activity.getResources().getColor(colorId));
+                }*/
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -183,5 +208,34 @@ public class CenterFragment extends Fragment {
      */
     private static int dpToPx(float dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density + 0.5f);
+    }
+
+    /**
+     * RecyclerView设置间距辅助类
+     */
+    public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
+        private int space;
+
+        public SpacesItemDecoration(int space) {
+            this.space = space;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view,
+                                   RecyclerView parent, RecyclerView.State state) {
+            outRect.left = space;
+            outRect.right = space;
+            outRect.bottom = space;
+
+            // Add top margin only for the first item to avoid double space between items
+            if (parent.getChildPosition(view) == 0)
+                outRect.top = space;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        centerRecyclerViewAdapter.notifyDataSetChanged();
     }
 }

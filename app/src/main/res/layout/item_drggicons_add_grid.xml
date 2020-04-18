@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="15dp"
+    android:gravity="center">
+    <LinearLayout
+        android:id="@+id/background_check"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:gravity="center"
+        android:background="@drawable/icons_billlist">
+        <ImageView
+            android:id="@+id/dragicons_image"
+            style="@style/DragAddImage"
+            android:src="@drawable/lanqiu" />
+    </LinearLayout>
+
+</LinearLayout>

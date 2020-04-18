@@ -11,12 +11,13 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.wyk.bookeeping.R;
 
 import java.util.List;
 
-public class MyFragmentAdapter extends FragmentPagerAdapter {
+public class MyFragmentAdapter extends FragmentStatePagerAdapter {
 
     private  List<Fragment> fragmentList;
     private  List<String> fragmentTitles;

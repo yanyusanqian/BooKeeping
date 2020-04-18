@@ -30,7 +30,7 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.codingending.popuplayout.PopupLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wyk.bookeeping.MainActivity;
+import com.wyk.bookeeping.activity.MainActivity;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.IconsAdpter;
 import com.wyk.bookeeping.bean.Icons;
@@ -39,23 +39,21 @@ import com.wyk.bookeeping.utils.SpUtils;
 import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.lang.reflect.Type;
-import java.sql.Time;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class ExpenditureFragment extends Fragment {
-    private RecyclerView gridview_expend;
-    private IconsAdpter iconsAdpter;
     private List<Icons> data_list, data_list_s;
     private EditText editText;
-    private TextView text_count, kb_tv_done, kb_tv_add, kb_tv_sub,date_text;
-    private TextView kb_tv_1, kb_tv_2, kb_tv_3, kb_tv_4, kb_tv_5, kb_tv_6, kb_tv_7, kb_tv_8, kb_tv_9, kb_tv_0, kb_tv_point;
-    private LinearLayout date_change, text_delete;
+    private TextView text_count;
+    private TextView kb_tv_done;
+    private TextView date_text;
     private ImageView date_image;
     private int postion;
     private PopupLayout popupLayout;
-    boolean flag = false;// 符号标识
+    private boolean flag = false;// 符号标识
     private String str = "";
     View view;
 
@@ -68,13 +66,13 @@ public class ExpenditureFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        gridview_expend = (RecyclerView) getActivity().findViewById(R.id.gridview_expend);
+        RecyclerView gridview_expend = (RecyclerView) getActivity().findViewById(R.id.gridview_expend);
         //新建List
         data_list = new ArrayList<>();
         //获取数据
         getData();
 
-        iconsAdpter = new IconsAdpter(getActivity(), data_list, data_list_s);
+        IconsAdpter iconsAdpter = new IconsAdpter(getActivity(), data_list, data_list_s);
         iconsAdpter.setOnMyItemClickListener(new IconsAdpter.OnMyItemClickListener() {
             @Override
             public void myClick(View v, int pos) {
@@ -83,7 +81,7 @@ public class ExpenditureFragment extends Fragment {
 
                 popupLayout = PopupLayout.init(getActivity(), view);
                 popupLayout.setUseRadius(false);
-                view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+               /* view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
                     @Override
                     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                         if (bottom - oldBottom < -1) {
@@ -94,7 +92,7 @@ public class ExpenditureFragment extends Fragment {
                         } else if (bottom - oldBottom > 1) {
                         }
                     }
-                });
+                });*/
                 initView(view);
                 popupLayout.show(PopupLayout.POSITION_BOTTOM);
             }
@@ -112,21 +110,21 @@ public class ExpenditureFragment extends Fragment {
         date_image = view.findViewById(R.id.date_image);
         text_count = view.findViewById(R.id.text_count);
         kb_tv_done = view.findViewById(R.id.kb_tv_done);
-        kb_tv_add = view.findViewById(R.id.kb_tv_add);
-        kb_tv_sub = view.findViewById(R.id.kb_tv_sub);
-        kb_tv_1 = view.findViewById(R.id.kb_tv_1);
-        kb_tv_2 = view.findViewById(R.id.kb_tv_2);
-        kb_tv_3 = view.findViewById(R.id.kb_tv_3);
-        kb_tv_4 = view.findViewById(R.id.kb_tv_4);
-        kb_tv_5 = view.findViewById(R.id.kb_tv_5);
-        kb_tv_6 = view.findViewById(R.id.kb_tv_6);
-        kb_tv_7 = view.findViewById(R.id.kb_tv_7);
-        kb_tv_8 = view.findViewById(R.id.kb_tv_8);
-        kb_tv_9 = view.findViewById(R.id.kb_tv_9);
-        kb_tv_0 = view.findViewById(R.id.kb_tv_0);
-        kb_tv_point = view.findViewById(R.id.kb_tv_point);
-        text_delete = view.findViewById(R.id.text_delete);
-        date_change = view.findViewById(R.id.date_change);
+        TextView kb_tv_add = view.findViewById(R.id.kb_tv_add);
+        TextView kb_tv_sub = view.findViewById(R.id.kb_tv_sub);
+        TextView kb_tv_1 = view.findViewById(R.id.kb_tv_1);
+        TextView kb_tv_2 = view.findViewById(R.id.kb_tv_2);
+        TextView kb_tv_3 = view.findViewById(R.id.kb_tv_3);
+        TextView kb_tv_4 = view.findViewById(R.id.kb_tv_4);
+        TextView kb_tv_5 = view.findViewById(R.id.kb_tv_5);
+        TextView kb_tv_6 = view.findViewById(R.id.kb_tv_6);
+        TextView kb_tv_7 = view.findViewById(R.id.kb_tv_7);
+        TextView kb_tv_8 = view.findViewById(R.id.kb_tv_8);
+        TextView kb_tv_9 = view.findViewById(R.id.kb_tv_9);
+        TextView kb_tv_0 = view.findViewById(R.id.kb_tv_0);
+        TextView kb_tv_point = view.findViewById(R.id.kb_tv_point);
+        LinearLayout text_delete = view.findViewById(R.id.text_delete);
+        LinearLayout date_change = view.findViewById(R.id.date_change);
 
         kb_tv_done.setOnClickListener(boradlistener);
         kb_tv_add.setOnClickListener(boradlistener);
@@ -185,7 +183,7 @@ public class ExpenditureFragment extends Fragment {
                     if (str != null && !str.equals("")) {
                         str = str.substring(0, str.length() - 1);
                         text_count.setText(str);    //删除一个字符
-                        if("".equals(str)){
+                        if ("".equals(str)) {
                             text_count.setText("0");
                         }
                     }
@@ -203,26 +201,42 @@ public class ExpenditureFragment extends Fragment {
                         if (TextUtils.isEmpty(note)) {
                             note = data_list.get(postion).getTitle();
                         }
-                        DBHelper dbHelper = DBHelper.getInstance(getActivity());
-                        SQLiteDatabase db = dbHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues();
-                        values.put("count", Math.abs(Float.valueOf(text_count.getText().toString())));
-                        values.put("inexType", 1);
-                        values.put("detailType", data_list.get(postion).getTitle());
-                        values.put("imgRes", data_list_s.get(postion).getDrawableid());
-                        if("今天".equals(date_text.getText().toString())){
-                            values.put("time", TimeUtil.getNowDate());
+                        Float count = Float.valueOf(text_count.getText().toString());
+                        if(Float.valueOf(text_count.getText().toString())==0){
+                            Toast.makeText(getActivity(),"请输入金额",Toast.LENGTH_SHORT).show();
                         }else{
-                            values.put("time", date_text.getText().toString());
+                            // 获取单例DBHelper
+                            DBHelper dbHelper = DBHelper.getInstance(getActivity());
+                            // 创建一个新的SqliteDatabase对象
+                            SQLiteDatabase db = dbHelper.getWritableDatabase();
+                            // 创建新的ContentValues对象，将数据存入其中
+                            ContentValues values = new ContentValues();
+                            if(count%1==0){
+                                values.put("count", Math.abs(Double.valueOf(text_count.getText().toString())));
+                            }else{
+                                DecimalFormat decimalFormat=new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+                                String p=decimalFormat.format(text_count.getText().toString());
+                                values.put("count", Float.valueOf(p));
+                            }
+                            values.put("inexType", 1);
+                            values.put("detailType", data_list.get(postion).getTitle());
+                            values.put("imgRes", data_list_s.get(postion).getDrawableid());
+                            if ("今天".equals(date_text.getText().toString())) {
+                                values.put("time", TimeUtil.getNowDate());
+                            } else {
+                                values.put("time", date_text.getText().toString());
+                            }
+                            values.put("note", note);
+                            // 插入数据
+                            db.insert("account", null, values);
+
+                            popupLayout.dismiss();
+                            startActivity(new Intent(getActivity(), MainActivity.class));
+                            getActivity().finish();
+
                         }
 
-                        values.put("note", note);
 
-                        db.insert("account", null, values);
-
-                        popupLayout.dismiss();
-                        startActivity(new Intent(getActivity(), MainActivity.class));
-                        getActivity().finish();
                     }
                     break;
                 case R.id.date_change:
@@ -230,15 +244,14 @@ public class ExpenditureFragment extends Fragment {
                     TimePickerView pvTime = new TimePickerBuilder(view.getContext(), new OnTimeSelectListener() {
                         @Override
                         public void onTimeSelect(Date date, View v) {
-                            Log.i("HERE click", "1111111111");
                             Toast.makeText(getActivity(), TimeUtil.date2String(date, "yyyy-MM-dd"), Toast.LENGTH_SHORT).show();
                             String textDate = TimeUtil.date2String(date, "yyyy-MM-dd");
                             String nowDate = TimeUtil.getNowDate();
-                            if(textDate.equals(nowDate)){
+                            if (textDate.equals(nowDate)) {
                                 date_image.setVisibility(View.VISIBLE);
                                 date_text.setText("今天");
                                 popupLayout.show();
-                            }else{
+                            } else {
                                 date_image.setVisibility(View.GONE);
                                 date_text.setText(textDate);
                                 popupLayout.show();
@@ -306,7 +319,7 @@ public class ExpenditureFragment extends Fragment {
 
     }
 
-    public void getData() {
+    private void getData() {
         String json = SpUtils.getString(getActivity(), "ExIconsList");
         String json_s = SpUtils.getString(getActivity(), "ExSIconsList");
         if (!TextUtils.isEmpty(json)) {
@@ -324,7 +337,7 @@ public class ExpenditureFragment extends Fragment {
                     R.drawable.n_car, R.drawable.n_medicalcare, R.drawable.n_book, R.drawable.n_education,
                     R.drawable.n_pets, R.drawable.n_cashgift, R.drawable.n_gift, R.drawable.n_work,
                     R.drawable.n_carrepair, R.drawable.n_donation, R.drawable.n_lottery, R.drawable.n_friends,
-                    R.drawable.n_express, R.drawable.n_setting};
+                    R.drawable.n_express};
             String[] ex_iconName = {
                     "餐饮", "购物", "日用", "交通",
                     "蔬菜", "水果", "零食", "运动",
@@ -334,7 +347,7 @@ public class ExpenditureFragment extends Fragment {
                     "汽车", "医疗", "书籍", "学习",
                     "宠物", "礼金", "礼物", "办公",
                     "维修", "捐赠", "彩票", "亲友",
-                    "快递", "设置"};
+                    "快递"};
 
             for (int i = 0; i < ex_icon.length; i++) {
                 Icons icons = new Icons(ex_icon[i], ex_iconName[i]);

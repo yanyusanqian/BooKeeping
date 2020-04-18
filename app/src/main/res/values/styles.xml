@@ -25,15 +25,76 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <!--<style name="keyboard_hor_line">
-        <item name="android:layout_weight">match_parent</item>
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/gray_dan</item>
+    <style name="update_progress_horizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminateOnly">false</item>
+        <!--进度条的进度颜色drawable文件-->
+        <item name="android:progressDrawable">@drawable/progressbar_bg</item>
+        <!--进度条的最小高度-->
+        <item name="android:minHeight">8dp</item>
+        <!--进度条的最大高度-->
+        <item name="android:maxHeight">13dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
     </style>
-    <style name="keyboard_ver_line">
-        <item name="android:layout_weight">1dp</item>
-        <item name="android:layout_height">@dimen/dp_59</item>
-        <item name="android:background">@color/gray_dan</item>
-    </style>-->
+
+    <style name="RadioButton" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
+
+    <style name="DragAddText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
+    <style name="DragAddImage">
+        <item name="android:layout_width">35dp</item>
+        <item name="android:layout_height">35dp</item>
+        <item name="android:scaleType">centerCrop</item>
+        <!--<item name="android:background">@drawable/icons_billlist</item>-->
+    </style>
+
+    <style name="Dialog_Msg" parent="@android:style/Theme.Dialog">
+        <item name="android:windowFrame">@color/transparent</item>
+        <!-- 边框 -->
+        <item name="android:windowIsFloating">true</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowNoTitle">true</item>
+        <!-- 无标题 -->
+        <item name="android:background">@color/transparent</item>
+        <!-- 背景色 -->
+        <item name="android:windowBackground">@color/white</item>
+        <!-- 背景透明 -->
+        <item name="android:backgroundDimEnabled">true</item>
+        <!-- 模糊 -->
+        <item name="android:windowFullscreen">true</item>
+        <!-- 全屏 -->
+    </style>
+
+    <style name="TabLayoutTextStyle">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TabLayoutTextStyle2">
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="main_menu_photo_anim">
+        <item name="android:windowEnterAnimation">@anim/photo_dialog_in_anim</item>
+        <item name="android:windowExitAnimation">@anim/photo_dialog_out_anim</item>
+    </style>
 
 </resources>

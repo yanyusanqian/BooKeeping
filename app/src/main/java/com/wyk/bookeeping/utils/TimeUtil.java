@@ -8,15 +8,31 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-/**
- * @author luo
- * @date 2017/8/21
- */
 public class TimeUtil {
     public static String[] WEEK = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
     public static final int WEEKDAYS = 7;
+
+    /**
+     * @Desc 获取两个时间之间的间隔天数
+     * @param startTimeStr
+     * @param endTimeStr
+     * @return
+     */
+    public static String getBetweenDays(String startTimeStr, String endTimeStr) {
+        int betweenDays = 0;
+        Date startTime = string2Date(startTimeStr,"yyyy-MM-dd");
+        Date endTime = string2Date(endTimeStr,"yyyy-MM-dd");
+
+        long start = startTime.getTime();
+        long end = endTime.getTime();
+
+        betweenDays = (int) (Math.abs(end - start)/(24*3600*1000));
+
+        return String.valueOf(betweenDays + 1);
+    }
 
     /**
      * 获取前n天日期、后n天日期
@@ -343,11 +359,11 @@ public class TimeUtil {
 
     public static String getNowDateMonth_String() {
         Calendar calendar = Calendar.getInstance();
-        int month = calendar.get(Calendar.MONTH)+1;
-        if(month<10){
-            return "0"+month;
+        int month = calendar.get(Calendar.MONTH) + 1;
+        if (month < 10) {
+            return "0" + month;
         }
-        return ""+month;
+        return "" + month;
 
     }
 
@@ -367,7 +383,7 @@ public class TimeUtil {
     }
 
     /**
-     * 获取当前日期在一年中的哪一个轴
+     * 获取当前日期在一年中的哪一个周
      * 一年有52个周，该函数的取值范围是1-52
      * 所以当一年中最后的几天超过52周，进入第53周时，将以下一年的第一周来计算
      *
@@ -377,7 +393,10 @@ public class TimeUtil {
     public static int getWeekOfYear(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        return calendar.get(Calendar.WEEK_OF_YEAR);
+        if ("星期日".equals(getWeekByDate(date)))
+            return calendar.get(Calendar.WEEK_OF_YEAR) - 1;
+        else
+            return calendar.get(Calendar.WEEK_OF_YEAR);
     }
 
     /**
@@ -430,7 +449,6 @@ public class TimeUtil {
         if (dayIndex < 1 || dayIndex > WEEKDAYS) {
             return null;
         }
-
         return WEEK[dayIndex - 1];
     }
 
@@ -509,7 +527,7 @@ public class TimeUtil {
                 else
                     list.add(i + "周");
             }
-        }else{
+        } else {
             for (int i = minweek; i <= maxweek; i++) {
                 if (i < 10)
                     list.add("0" + i + "周");
@@ -517,15 +535,15 @@ public class TimeUtil {
                     list.add(i + "周");
             }
         }
-        Log.i("TIME",list.toString());
+        Log.i("TIME", list.toString());
         return list;
     }
 
-    public  static List<String> getBetweenDateList_month(Map<String,String> map){
+    public static List<String> getBetweenDateList_month(Map<String, String> map) {
         Date maxdate = TimeUtil.string2Date(map.get("MAX"), "yyyy-MM-dd");//最近日期
         Date mindate = TimeUtil.string2Date(map.get("MIN"), "yyyy-MM-dd");//最远日期
-        int maxmonth = TimeUtil.getMonth(maxdate);
-        int minmonth = TimeUtil.getMonth(mindate);
+        int maxmonth = TimeUtil.getMonth(maxdate) + 1;
+        int minmonth = TimeUtil.getMonth(mindate) + 1;
         int maxyear = TimeUtil.getYear(maxdate);
         int minyear = TimeUtil.getYear(mindate);
 
@@ -537,7 +555,7 @@ public class TimeUtil {
                 else
                     list.add(i + "月");
             }
-        }else{
+        } else {
             for (int i = minmonth; i <= maxmonth; i++) {
                 if (i < 10)
                     list.add("0" + i + "月");
@@ -548,17 +566,81 @@ public class TimeUtil {
         return list;
     }
 
-    public  static List<String> getBetweenDateList_year(Map<String,String> map){
+    public static List<String> getBetweenDateList_year(Map<String, String> map) {
         Date maxdate = TimeUtil.string2Date(map.get("MAX"), "yyyy-MM-dd");//最近日期
         Date mindate = TimeUtil.string2Date(map.get("MIN"), "yyyy-MM-dd");//最远日期
         int maxyear = TimeUtil.getYear(maxdate);
         int minyear = TimeUtil.getYear(mindate);
 
         List<String> list = new ArrayList<>();
-        for(int i = minyear;i<=maxyear;i++){
-            list.add(i+"年");
+        for (int i = minyear; i <= maxyear; i++) {
+            list.add(i + "年");
         }
         return list;
     }
 
+    public static Date getFirstDayOfWeek(int year, int week) {
+        Calendar cal = Calendar.getInstance();
+        //设置年份
+        cal.set(Calendar.YEAR, year);
+        //设置周
+        cal.set(Calendar.WEEK_OF_YEAR, week);
+        //设置该周第一天为星期一
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        //格式化日期
+        /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String firstDayOfWeek = sdf.format(cal.getTime());*/
+
+        return cal.getTime();
+    }
+
+
+    public static List<String> getDateListByWeek(String week) {
+        List<String> weeklist = new ArrayList<>();
+        // 获取传入的周的第一天的日期
+        Date firstDayOfWeek = TimeUtil.getFirstDayOfWeek(TimeUtil.getNowDateYear(), Integer.parseInt(week.replaceAll("周", "")));
+
+        Calendar c = Calendar.getInstance(Locale.CHINA);
+        c.setTime(firstDayOfWeek);
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+        if (c.getFirstDayOfWeek() == Calendar.SUNDAY) {
+            c.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        c.add(Calendar.DAY_OF_MONTH, -dayOfWeek);
+
+        for (int i = 1; i <= 7; i++) {
+            c.add(Calendar.DAY_OF_MONTH, 1);
+            weeklist.add(new SimpleDateFormat("MM-dd").format(c.getTime()));
+        }
+        Log.i("List处理 week list", weeklist.toString());
+        return weeklist;
+    }
+
+    public static List<String> getDateListByMonth(String month) {
+        List<String> monthList = new ArrayList<>();
+        int year = getNowDateYear();
+        month = month.replaceAll("月", "");
+        Date date = TimeUtil.string2Date(year + "-" + month + "-01", "yyyy-MM-dd");
+        String endday = date2String(TimeUtil.getEndDayOfMonth(date), "dd");
+        int enddaynum = Integer.parseInt(endday);
+        for (int i = 1; i <= enddaynum; i++) {
+            if (i < 10)
+                monthList.add(month + "-0" + i);
+            else
+                monthList.add(month + "-" + i);
+        }
+        Log.i("TAG", "getDateListByMonth:" + monthList.toString());
+        return monthList;
+    }
+
+    public static List<String> getDateListByYear() {
+        List<String> yearList = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
+            if (i < 10)
+                yearList.add("0" + i);
+            else
+                yearList.add("" + i);
+        }
+        return yearList;
+    }
 }

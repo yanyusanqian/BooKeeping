@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyk.bookeeping.bean.Account;
+import com.wyk.bookeeping.bean.Icons;
 
 import java.util.List;
 
@@ -40,5 +41,5 @@ public abstract class BaseAdapter<VH extends RecyclerView.ViewHolder> extends Re
     }
 
     public abstract void notifyDataSetChanged(List<Account> dataList);
-
+    public abstract void notifyDataSetChanged_icons(List<Icons> dataList);
 }

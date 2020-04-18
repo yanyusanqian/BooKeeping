@@ -13,9 +13,10 @@ import java.util.Map;
 
 public class RcyclerUtils {
 
-    public static List<Account> listAddType(List<Account> list) {
+    public static List<Account> listAddType(List<Account> accountlist) {
         int VIEW_TITLE = 1;
         int VIEW_ITEM = 0;
+        List<Account> list = accountlist;
 
         List<Map<String, Object>> title;
         if (list.size() != 0) {

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorWrite">#FFFFFF</color>
-    <color name="colorPrimary">#008577</color>
-    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorPrimary">#8E6CE7</color>
+    <color name="colorPrimaryDark">#8E6CE7</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorLavender">#8E6CE7</color>
     <color name="colorDarkpurple">#8A2BE2</color>
@@ -10,6 +10,10 @@
     <color name="gray_dan">#D0D0D0</color>
     <color name="red_pressed">#FF6666</color>
     <color name="purple_dan">#C0ACF3</color>
+    <color name="gray_dandan">#F5F5F5</color>
+    <color name="banhei">#333333</color>
+    <color name="henhui">#646464</color>
+    <color name="color_f6">#f6f6f6</color>
 
     <color name="transparent">#00000000</color><!--透明色 -->   
     <color name="white">#FFFFFF</color><!--白色 -->   

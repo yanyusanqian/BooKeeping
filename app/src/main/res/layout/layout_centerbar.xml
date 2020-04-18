@@ -34,7 +34,7 @@
                         android:id="@+id/profile_image"
                         android:layout_width="65dp"
                         android:layout_height="65dp"
-                        android:src="@drawable/pre1"
+                        android:src="@mipmap/headportrait"
                         android:scaleType="centerCrop"
                         app:civ_border_width="1dp"
                         app:civ_border_color="#FFFFFF"
@@ -43,16 +43,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
+                        android:textColor="@color/white"
                         android:layout_marginLeft="15dp"
                         android:text="变色龙"/>
                 </LinearLayout>
-                <ImageButton
+               <!-- <ImageButton
                     android:id="@+id/imagebutton"
                     android:layout_marginRight="20dp"
                     android:layout_gravity="center_vertical"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:src="@drawable/pre1"/>
+                    android:src="@drawable/pre1"/>-->
             </LinearLayout>
             <LinearLayout
                 android:layout_marginTop="20dp"
@@ -66,14 +67,17 @@
                     android:orientation="vertical"
                     android:gravity="center">
                     <TextView
+                        android:id="@+id/totaldays"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
-                        android:text="0"/>
+                        android:textColor="@color/white"
+                        android:text="1"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:textColor="@color/white"
                         android:text="记账总天数"/>
                 </LinearLayout>
                 <LinearLayout
@@ -83,21 +87,24 @@
                     android:orientation="vertical"
                     android:gravity="center">
                     <TextView
+                        android:id="@+id/total"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
+                        android:textColor="@color/white"
                         android:text="0" />
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
+                        android:textColor="@color/white"
                         android:text="记账总笔数"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/center_toolbar"
             android:layout_width="match_parent"
             android:layout_height="46dp"
             android:background="@color/colorLavender"

@@ -5,4 +5,5 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="dp_59">59dp</dimen>
     <dimen name="dp_60">60dp</dimen>
+    <dimen name="dp_50">50dp</dimen>
 </resources>

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="85dp"
-    android:gravity="center">
+    android:layout_height="90dp"
+    android:gravity="center"
+    android:background="@drawable/center_backgroud">
     <LinearLayout
+        android:id="@+id/center_massage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -11,16 +13,18 @@
         android:orientation="vertical"
         >
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/pre1"/>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/message"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/banhei"
             android:text="消息"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/center_clock"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -28,16 +32,18 @@
         android:orientation="vertical"
         >
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/pre1"/>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/clock"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/banhei"
             android:text="定时提醒"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/center_category"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -45,16 +51,18 @@
         android:orientation="vertical"
         >
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/pre1"/>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/labelsetting"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
             android:text="类别设置"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/center_export"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -62,16 +70,18 @@
         android:orientation="vertical"
         >
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/pre1"/>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/export"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/banhei"
             android:text="导出数据"/>
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/center_setting"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -79,13 +89,14 @@
         android:orientation="vertical"
         >
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/pre1"/>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/setting"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/banhei"
             android:text="设置"/>
     </LinearLayout>
 </LinearLayout>

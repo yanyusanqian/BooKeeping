@@ -19,11 +19,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.MyFragmentAdapter;
-import com.wyk.bookeeping.livedate.AccountViewModel;
+import com.wyk.bookeeping.livedata.AccountViewModel;
 import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,15 +48,18 @@ public class WeekFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initView();
         accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         accountViewModel.getDate().observe(getActivity(), new Observer<Map<String, String>>() {
             @Override
             public void onChanged(Map<String, String> stringStringMap) {
-                map = stringStringMap;
+                    Log.i("TAG start","11");
+                    map = stringStringMap;
+                    int InExType = accountViewModel.getInExType().getValue();
+                    Log.i("TAG inextype",InExType+"");
+                    initChartData(InExType);
             }
         });
-        initView();
-        initChartData();
     }
 
     private void initView() {
@@ -67,22 +69,29 @@ public class WeekFragment extends Fragment {
         week_viewpager = (ViewPager) getActivity().findViewById(R.id.week_viewpager);
     }
 
-    private void initChartData() {
+    private void initChartData(int InExType) {
         if (map.isEmpty()) {
             not_emptyview.setVisibility(View.GONE);
             emptyview.setVisibility(View.VISIBLE);
         } else {
+            not_emptyview.setVisibility(View.VISIBLE);
+            emptyview.setVisibility(View.GONE);
+            // 获取周期列表
             datelist = TimeUtil.getBetweenDateList_week(map);
             fragmentList = new ArrayList<>();
-            for (int i = 0; i < datelist.size(); i++) {
-                //i 为对应time列表第几个
-//                fragmentList.add(DateChartFragment.newInstance(TYPE_WEEK, datelist.get(i)));
-                fragmentList.add(new ThirdFragment());
+            for(int i =0;i<datelist.size();i++){
+                // 生成每个周期对应Fragment
+                fragmentList.add(DateChartFragment.newInstance(TYPE_WEEK,datelist.get(i),InExType));
             }
+            // 设置Fragment适配器和布局管理器
             MyFragmentAdapter myFragmentAdapter = new MyFragmentAdapter(
                     getChildFragmentManager(), fragmentList, datelist, getActivity(),
                     FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+            Log.i("TAG","HERE?");
+            // 向ViewPager中设置Fragment适配器
             week_viewpager.setAdapter(myFragmentAdapter);
+            Log.i("TAG","HERE2");
+//            myFragmentAdapter.notifyDataSetChanged();
             week_viewpager.setOffscreenPageLimit(1);
             week_viewpager.setCurrentItem(0);
             if (datelist.size() < 6)
@@ -95,8 +104,6 @@ public class WeekFragment extends Fragment {
                     chart_date_tablayout.setupWithViewPager(week_viewpager);
                 }
             });
-
-//            chart_date_tablayout.setupWithViewPager(month_viewpager);
         }
     }
 }

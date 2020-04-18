@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.bean.Account;
+import com.wyk.bookeeping.bean.Icons;
 import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.util.List;
@@ -33,6 +34,11 @@ public class BillListAdapter extends BaseAdapter<RecyclerView.ViewHolder> {
     public void notifyDataSetChanged(List<Account> accountList) {
         this.accountList = accountList;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyDataSetChanged_icons(List<Icons> dataList) {
+
     }
 
     public void removeData(int position) {

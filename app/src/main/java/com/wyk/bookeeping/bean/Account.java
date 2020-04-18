@@ -25,8 +25,18 @@ public class Account {
     private float title_expenditure;
     // 某个日期的总收入
     private float title_income;
+    // 某一类型的条数
+    private int num;
 
     public Account(){}
+
+    public Account(String detailType,int imgRes,float count,int num) {
+        this.count = count;
+        this.detailType = detailType;
+        this.imgRes = imgRes;
+        this.num = num;
+    }
+
     public Account(Long id, float count, int inexType, String detailType, int imgRes, Date time, String note) {
         this.id = id;
         this.count = count;
@@ -46,6 +56,14 @@ public class Account {
         this.imgRes = imgRes;
         this.time = time;
         this.note = note;
+    }
+
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
     }
 
     public int getView_type() {

@@ -11,7 +11,7 @@
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.wyk.bookeeping"
-            android:targetClass="com.wyk.bookeeping.CustomAddActivity" />
+            android:targetClass="com.wyk.bookeeping.activity.BookkeepingActivity" />
         <categories android:name="android.shortcut.conversation"/>
     </shortcut>
 </shortcuts>

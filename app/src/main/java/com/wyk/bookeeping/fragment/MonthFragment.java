@@ -18,11 +18,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.tabs.TabLayout;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.MyFragmentAdapter;
-import com.wyk.bookeeping.livedate.AccountViewModel;
+import com.wyk.bookeeping.livedata.AccountViewModel;
 import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,15 +45,16 @@ public class MonthFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initView();
         accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         accountViewModel.getDate().observe(getActivity(), new Observer<Map<String, String>>() {
             @Override
             public void onChanged(Map<String, String> stringStringMap) {
                 map = stringStringMap;
+                int InExType = accountViewModel.getInExType().getValue();
+                initChartData(InExType);
             }
         });
-        initView();
-        initChartData();
     }
 
     private void initView() {
@@ -64,22 +64,27 @@ public class MonthFragment extends Fragment {
         month_viewpager = (ViewPager) getActivity().findViewById(R.id.month_viewpager);
     }
 
-    private void initChartData() {
-        if(map.isEmpty()){
+    private void initChartData(int InExType) {
+        if (map.isEmpty()) {
             not_emptyview.setVisibility(View.GONE);
             emptyview.setVisibility(View.VISIBLE);
-        }else{
+        } else {
+            not_emptyview.setVisibility(View.VISIBLE);
+            emptyview.setVisibility(View.GONE);
             datelist = TimeUtil.getBetweenDateList_month(map);
             fragmentList = new ArrayList<>();
+
             for(int i =0;i<datelist.size();i++){
                 //i 为对应time列表第几个
-                fragmentList.add(DateChartFragment.newInstance(TYPE_MONTH,datelist.get(i)));
+                fragmentList.add(DateChartFragment.newInstance(TYPE_MONTH,datelist.get(i),InExType));
             }
             MyFragmentAdapter myFragmentAdapter = new MyFragmentAdapter(
                     getChildFragmentManager(), fragmentList, datelist, getActivity(),
                     FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+            myFragmentAdapter.notifyDataSetChanged();
             month_viewpager.setAdapter(myFragmentAdapter);
-            month_viewpager.setOffscreenPageLimit(1);
+
+            month_viewpager.setOffscreenPageLimit(0);
             month_viewpager.setCurrentItem(0);
             if (datelist.size() < 6)
                 chart_date_tablayout.setTabMode(TabLayout.MODE_FIXED);

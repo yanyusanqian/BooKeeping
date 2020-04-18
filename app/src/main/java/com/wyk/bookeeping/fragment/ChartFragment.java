@@ -7,15 +7,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.ViewPager;
@@ -26,9 +23,8 @@ import com.wyk.bookeeping.adpter.MyFragmentAdapter;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.bean.Account;
 import com.wyk.bookeeping.bean.DataStatus;
-import com.wyk.bookeeping.livedate.AccountViewModel;
+import com.wyk.bookeeping.livedata.AccountViewModel;
 import com.wyk.bookeeping.utils.DBHelper;
-import com.wyk.bookeeping.utils.TimeUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,54 +41,56 @@ public class ChartFragment extends Fragment {
     private AccountViewModel accountViewModel;
     private List<Account> accountList;
     private SQLiteDatabase db;
-    private FrameLayout emptyview;
+    private PopupLayout popupLayout;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_2, container, false);
+        return inflater.inflate(R.layout.fragment_chart, container, false);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initView();
         accountViewModel = new ViewModelProvider(requireActivity()).get(AccountViewModel.class);
         db = DBHelper.getInstance(getActivity()).getWritableDatabase();
-//        getAllAccountList();
-        getMaxMinDate();
-        initView();
+        if ("支出".equals(chart_toolbar_textview.getText().toString())) {
+            getMaxMinDate(1);
+            accountViewModel.getInExType().setValue(1);
+        } else {
+            getMaxMinDate(0);
+            accountViewModel.getInExType().setValue(0);
+        }
 
+
+        // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
+        accountViewModel.getCurrentName().observe(getActivity(), new Observer<DataStatus>() {
+            @Override
+            public void onChanged(DataStatus dataStatus) {
+                accountList = dataStatus.getAccountList();
+                if (accountList != null)
+                    if ("支出".equals(chart_toolbar_textview.getText().toString()))
+                        getMaxMinDate(1);
+                    else
+                        getMaxMinDate(0);
+            }
+        });
 
     }
 
-/*    private void getAllAccountList() {
-        accountList = new ArrayList<>();
-        String sql = "SELECT * FROM account";
-        Cursor cursor = db.rawQuery(sql, null);
-        if (cursor.getCount() != 0) {
-            while (cursor.moveToNext()) {
-                Account account = new Account(
-                        cursor.getLong(0), cursor.getFloat(2), cursor.getInt(3),
-                        cursor.getString(4), cursor.getInt(5),
-                        TimeUtil.string2Date(cursor.getString(6), "yyyy-MM-dd")
-                        , cursor.getString(7));
-                accountList.add(account);
-            }
-        }
-        accountViewModel.getAllaccount().setValue(accountList);
-    }*/
-
-    private void getMaxMinDate() {
-        String sql = "SELECT Max(time),Min(time) FROM account";
+    private void getMaxMinDate(int type) {
+        String sql = "SELECT Max(time),Min(time) FROM account WHERE inexType = " + type + "";
         Cursor cursor = db.rawQuery(sql, null);
         cursor.moveToFirst();
-        Log.i("TAG44",cursor.getString(0)+"");
-        if(cursor.getString(0)!=null&&cursor.getString(1)!=null){
-            Map<String,String> map = new HashMap<>();
-            map.put("MAX",cursor.getString(0));
-            map.put("MIN",cursor.getString(1));
+        Log.i("TAG44", cursor.getString(0) + "");
+        if (cursor.getString(0) != null && cursor.getString(1) != null) {
+            Map<String, String> map = new HashMap<>();
+            map.put("MAX", cursor.getString(0));
+            map.put("MIN", cursor.getString(1));
             accountViewModel.getDate().setValue(map);
-        }else{
-            Map<String,String> map = new HashMap<>();
+        } else {
+            Map<String, String> map = new HashMap<>();
             accountViewModel.getDate().setValue(map);
         }
     }
@@ -102,6 +100,8 @@ public class ChartFragment extends Fragment {
         chart_viewpager = (ViewPager) getActivity().findViewById(R.id.chart_viewpager);
         chart_toolbar_textview = (TextView) getActivity().findViewById(R.id.chart_toolbar_textview);
         chart_choose = (LinearLayout) getActivity().findViewById(R.id.chart_choose);
+
+
         setViewPager();
         setCustomTablayout();
         setPopWindow();
@@ -112,32 +112,45 @@ public class ChartFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 View view = View.inflate(getActivity(), R.layout.layout_popspinner, null);
-                PopupLayout popupLayout = PopupLayout.init(getActivity(), view);
+                popupLayout = PopupLayout.init(getActivity(), view);
                 popupLayout.setUseRadius(false);
-                chart_choose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        switch (v.getId()){
-                            case R.id.popspinner_expenditure:
-                                if("支出".equals(chart_toolbar_textview.getText().toString())){
-                                    Toast.makeText(getActivity(),"支出1",Toast.LENGTH_LONG).show();
-                                }else{
-                                    Toast.makeText(getActivity(),"支出2",Toast.LENGTH_LONG).show();
-                                }
-                                break;
-                            case  R.id.popspinner_income:
-                                if("收入".equals(chart_toolbar_textview.getText().toString())){
-
-                                }
-                                break;
-                        }
-                    }
-                });
+                view.findViewById(R.id.popspinner_expenditure).setOnClickListener(myListener);
+                view.findViewById(R.id.popspinner_income).setOnClickListener(myListener);
                 popupLayout.show(PopupLayout.POSITION_TOP);
             }
         });
 
     }
+
+    View.OnClickListener myListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.popspinner_expenditure:
+                    if (!"支出".equals(chart_toolbar_textview.getText().toString())) {
+                        chart_toolbar_textview.setText("支出");
+                        accountViewModel.getInExType().setValue(1);
+                        getMaxMinDate(1);
+
+                        popupLayout.dismiss();
+                    } else {
+                        popupLayout.dismiss();
+                    }
+                    break;
+                case R.id.popspinner_income:
+                    if (!"收入".equals(chart_toolbar_textview.getText().toString())) {
+                        chart_toolbar_textview.setText("收入");
+                        accountViewModel.getInExType().setValue(0);
+                        getMaxMinDate(0);
+
+                        popupLayout.dismiss();
+                    } else {
+                        popupLayout.dismiss();
+                    }
+                    break;
+            }
+        }
+    };
 
     private void setViewPager() {
         List<Fragment> fragmentList = new ArrayList<>();
