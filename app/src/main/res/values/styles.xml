@@ -97,4 +97,6 @@
         <item name="android:windowExitAnimation">@anim/photo_dialog_out_anim</item>
     </style>
 
+
+
 </resources>

@@ -19,7 +19,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.activity.AddArticleActivity;
+import com.wyk.bookeeping.activity.LoginActivity;
 import com.wyk.bookeeping.adpter.MyFragmentAdapter;
+import com.wyk.bookeeping.utils.SpUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +31,14 @@ public class CommunityFragment extends Fragment {
     private RecyclerView community_recycle_view;
     private FloatingActionButton community_flaot_btn;
     private ViewPager community_viewpager;
+    private String userPhone = "";
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_community, container,false);
+        return inflater.inflate(R.layout.fragment_community, container, false);
     }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -45,7 +50,10 @@ public class CommunityFragment extends Fragment {
 
 
         community_flaot_btn.setOnClickListener(v -> {
-            startActivity(new Intent(getActivity(), AddArticleActivity.class));
+            if ("".equals(userPhone))
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+            else
+                startActivity(new Intent(getActivity(), AddArticleActivity.class));
         });
 
         List<Fragment> fragmentList = new ArrayList<>();
@@ -54,7 +62,7 @@ public class CommunityFragment extends Fragment {
         fragmentList.add(ItemCommunityFragment.newInstance(2)); // 最新
         fragmentTitles.add("最热");
         fragmentTitles.add("最新");
-        MyFragmentAdapter adapter = new MyFragmentAdapter(getChildFragmentManager(),fragmentList,fragmentTitles, getActivity(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        MyFragmentAdapter adapter = new MyFragmentAdapter(getChildFragmentManager(), fragmentList, fragmentTitles, getActivity(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         community_viewpager.setAdapter(adapter);
 
         community_viewpager.setOffscreenPageLimit(1);
@@ -64,25 +72,31 @@ public class CommunityFragment extends Fragment {
 
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                TextView title = (TextView)(((LinearLayout) ((LinearLayout) community_tablayout.getChildAt(0)).getChildAt(0)).getChildAt(1));
-            title.setTextSize(18);
-            title.setTextAppearance(getActivity(), Typeface.BOLD);
+                TextView title = (TextView) (((LinearLayout) ((LinearLayout) community_tablayout.getChildAt(0)).getChildAt(0)).getChildAt(1));
+                title.setTextSize(18);
+                title.setTextAppearance(getActivity(), Typeface.BOLD);
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                TextView title = (TextView)(((LinearLayout) ((LinearLayout) community_tablayout.getChildAt(0)).getChildAt(0)).getChildAt(1));
+                TextView title = (TextView) (((LinearLayout) ((LinearLayout) community_tablayout.getChildAt(0)).getChildAt(0)).getChildAt(1));
                 title.setTextSize(16);
                 title.setTextAppearance(getActivity(), Typeface.NORMAL);
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                TextView title = (TextView)(((LinearLayout) ((LinearLayout) community_tablayout.getChildAt(0)).getChildAt(0)).getChildAt(1));
+                TextView title = (TextView) (((LinearLayout) ((LinearLayout) community_tablayout.getChildAt(0)).getChildAt(0)).getChildAt(1));
                 title.setTextSize(18);
                 title.setTextAppearance(getActivity(), Typeface.BOLD);
             }
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        userPhone = SpUtils.getString(getActivity(),"USERPHONE","");
     }
 }

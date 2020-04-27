@@ -4,6 +4,8 @@ import android.app.Application;
 
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechUtility;
+import com.previewlibrary.ZoomMediaLoader;
+import com.wyk.bookeeping.utils.ImageLoader;
 
 import cn.jpush.android.api.JPushInterface;
 import cn.jpush.android.helper.Logger;
@@ -22,5 +24,7 @@ public class MyApplication extends Application {
 
         JPushInterface.setDebugMode(true); 	// 设置开启日志,发布时请关闭日志
         JPushInterface.init(this);     		// 初始化 JPush
+
+        ZoomMediaLoader.getInstance().init(new ImageLoader());
     }
 }

@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">BooKeeping</string>
     <string name="action_settings">Settings</string>
+    
+    <string name="localhost">192.168.0.103:8080</string>
+    
     <string name="str_bill_empty">暂无数据</string>
     <string name="settings_short_name">记一笔</string>
     <string name="settings_long_name">记一笔</string>

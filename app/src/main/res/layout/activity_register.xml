@@ -7,6 +7,7 @@
     android:orientation="vertical">
 
     <ImageView
+        android:id="@+id/register_return"
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_gravity="right"
@@ -34,6 +35,7 @@
             android:textSize="18sp" />
 
         <EditText
+            android:id="@+id/register_phonenum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
@@ -56,7 +58,6 @@
         android:layout_height="60dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginBottom="35dp"
         android:background="@drawable/edit_input_bg"
         android:gravity="center"
         android:orientation="horizontal">
@@ -71,6 +72,7 @@
             android:textSize="18sp" />
 
         <EditText
+            android:id="@+id/register_password"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -81,12 +83,20 @@
             android:inputType="textPassword" />
 
         <ImageView
+            android:id="@+id/register_im_change"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_marginEnd="20dp"
             android:src="@drawable/eyes_close" />
     </LinearLayout>
-
+    <TextView
+        android:id="@+id/register_password_err"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
+        android:textColor="@color/red_pressed"
+        android:layout_gravity="center" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -106,6 +116,7 @@
             android:textSize="18sp" />
 
         <EditText
+            android:id="@+id/register_code"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -116,13 +127,15 @@
             android:inputType="number" />
 
        <Button
+           android:id="@+id/register_code_button"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
            android:layout_marginEnd="10dp"
            android:paddingRight="10dp"
            android:paddingLeft="10dp"
+           android:textColor="@color/white"
            android:background="@drawable/bt_code_bg"
-           android:textSize="16sp"
+           android:textSize="14sp"
            android:text="@string/verification_code_send"/>
     </LinearLayout>
     <TextView
@@ -135,11 +148,13 @@
         android:layout_gravity="center" />
 
     <Button
+        android:id="@+id/register"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="30dp"
         android:layout_marginRight="30dp"
+        android:textColor="@color/white"
         android:background="@drawable/bg_toolbar_gardient"
         android:text="@string/register"
         android:textSize="18sp" />

@@ -331,12 +331,24 @@ public class TimeUtil {
 
     /**
      * 获取当前时间
-     * yyyy-MM-dd日   HH:mm
+     * yyyy-MM-dd日
      *
      * @return
      */
     public static String getNowDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date curDate = new Date();//获取当前时间
+        return formatter.format(curDate);
+    }
+
+    /**
+     * 获取当前时间
+     * yyyy-MM-dd日   HH:mm
+     *
+     * @return
+     */
+    public static String getNowDateTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:MM");
         Date curDate = new Date();//获取当前时间
         return formatter.format(curDate);
     }

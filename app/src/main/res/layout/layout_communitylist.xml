@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/test_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/banhei"
-        android:text="1"/>
+<com.scwang.smartrefresh.layout.SmartRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/refreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_dandan"
+    app:srlAccentColor="@color/gray"
+    app:srlEnablePreviewInEditMode="true"
+    app:srlPrimaryColor="@color/gray_dandan">
+    <!--srlAccentColor srlPrimaryColor 将会改变 Header 和 Footer 的主题颜色-->
+    <!--srlEnablePreviewInEditMode 可以开启和关闭预览功能-->
+    <com.scwang.smartrefresh.layout.header.ClassicsHeader
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/community_recycle_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-</LinearLayout>
+        android:id="@+id/community_recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</com.scwang.smartrefresh.layout.SmartRefreshLayout>

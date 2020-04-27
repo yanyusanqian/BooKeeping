@@ -81,18 +81,6 @@ public class ExpenditureFragment extends Fragment {
 
                 popupLayout = PopupLayout.init(getActivity(), view);
                 popupLayout.setUseRadius(false);
-               /* view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                        if (bottom - oldBottom < -1) {
-                            //软键盘弹上去了,动态设置高度为0
-                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                                    0);
-                            v.findViewById(R.id.tablelayout).setLayoutParams(params);
-                        } else if (bottom - oldBottom > 1) {
-                        }
-                    }
-                });*/
                 initView(view);
                 popupLayout.show(PopupLayout.POSITION_BOTTOM);
             }
@@ -203,7 +191,7 @@ public class ExpenditureFragment extends Fragment {
                         }
                         Float count = Float.valueOf(text_count.getText().toString());
                         if(Float.valueOf(text_count.getText().toString())==0){
-                            Toast.makeText(getActivity(),"请输入金额",Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(),"请输入金额",Toast.LENGTH_SHORT).show();
                         }else{
                             // 获取单例DBHelper
                             DBHelper dbHelper = DBHelper.getInstance(getActivity());
@@ -228,6 +216,7 @@ public class ExpenditureFragment extends Fragment {
                             }
                             values.put("note", note);
                             // 插入数据
+                            Log.i("TAG 11:",values.toString());
                             db.insert("account", null, values);
 
                             popupLayout.dismiss();

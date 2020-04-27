@@ -14,6 +14,7 @@
         app:titleEnabled="false">
 
         <LinearLayout
+            android:id="@+id/center_login"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="#8E6CE7"
@@ -25,13 +26,14 @@
                 android:layout_height="wrap_content"
                 >
                 <LinearLayout
+
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_vertical">
                     <de.hdodenhof.circleimageview.CircleImageView
                         xmlns:app="http://schemas.android.com/apk/res-auto"
-                        android:id="@+id/profile_image"
+                        android:id="@+id/center_image"
                         android:layout_width="65dp"
                         android:layout_height="65dp"
                         android:src="@mipmap/headportrait"
@@ -40,12 +42,13 @@
                         app:civ_border_color="#FFFFFF"
                         android:layout_marginLeft="30dp"/>
                     <TextView
+                        android:id="@+id/center_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
                         android:textColor="@color/white"
                         android:layout_marginLeft="15dp"
-                        android:text="变色龙"/>
+                        android:text="未登录"/>
                 </LinearLayout>
                <!-- <ImageButton
                     android:id="@+id/imagebutton"

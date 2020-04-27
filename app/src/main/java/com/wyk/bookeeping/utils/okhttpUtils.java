@@ -1,9 +1,12 @@
 package com.wyk.bookeeping.utils;
 
+import android.util.Log;
+
 import java.util.HashMap;
 
 import okhttp3.Call;
 import okhttp3.HttpUrl;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -24,8 +27,24 @@ public class okhttpUtils {
     }
 
     public String Connection(String url, HashMap<String, String> params) throws Exception {
-
         final HttpUrl.Builder urlBuilder;
+
+        /*MultipartBody.Builder multipartBodyBuilder;
+        multipartBodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM);
+        if (params != null) {
+            for (String key : params.keySet()) {
+                multipartBodyBuilder.addFormDataPart(key, params.get(key));
+            }
+        }
+        *//*创建Request对象,get方式不需要封装表单数据,给url*//*
+        Request request = new Request.Builder()
+                .url(url)
+                .post(multipartBodyBuilder.build())
+                .build();
+        //创建Call对象: 执行请求和获取相应
+        Call call = client.newCall(request);
+        Response response = call.execute();*/
 
         /*连接参数*/
         urlBuilder = HttpUrl.parse(url).newBuilder();
@@ -40,6 +59,7 @@ public class okhttpUtils {
                 .url(urlBuilder.build())
                 .get()
                 .build();
+        Log.i("Request:",urlBuilder.build()+"");
         //创建Call对象: 执行请求和获取相应
         Call call = client.newCall(request);
         Response response = call.execute();

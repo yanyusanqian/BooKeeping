@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,6 +33,8 @@ import com.luck.picture.lib.permissions.RxPermissions;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.FullyGridLayoutManager;
 import com.wyk.bookeeping.adpter.GridImageAdapter;
+import com.wyk.bookeeping.utils.SpUtils;
+import com.wyk.bookeeping.utils.TimeUtil;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -37,7 +42,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import cn.jpush.android.cache.Sp;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -57,8 +64,8 @@ public class AddArticleActivity extends AppCompatActivity {
     private EditText article_edit;
     private FrameLayout article_return;
     private TextView article_done;
-    private String userid;
-    private String url = "";
+    private String userPhone;
+    private String  response=null,user_nikename;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +76,9 @@ public class AddArticleActivity extends AppCompatActivity {
         article_edit = findViewById(R.id.article_edit);
         article_return = findViewById(R.id.article_return);
         article_done = findViewById(R.id.article_done);
+
+        userPhone = SpUtils.getString(AddArticleActivity.this,"USERPHONE","");
+        user_nikename = SpUtils.getString(AddArticleActivity.this,"USERNAME","未命名");
 
         initWidget();
 
@@ -144,7 +154,6 @@ public class AddArticleActivity extends AppCompatActivity {
         lp.alpha = 0.5f;
         getWindow().setAttributes(lp);
         pop.setOnDismissListener(new PopupWindow.OnDismissListener() {
-
             @Override
             public void onDismiss() {
                 WindowManager.LayoutParams lp = getWindow().getAttributes();
@@ -227,13 +236,16 @@ public class AddArticleActivity extends AppCompatActivity {
             if (selectList.size() == 0) {
                 multipartBodyBuilder = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("name", userid)
-                        .addFormDataPart("content", text);
+                        .addFormDataPart("user_phone", userPhone)
+                        .addFormDataPart("content", text)
+                        .addFormDataPart("time", TimeUtil.getNowDateTime());
             } else {
+                Log.i("TAG","userPhone"+userPhone);
                 multipartBodyBuilder = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("name", userid)
-                        .addFormDataPart("content", text);
+                        .addFormDataPart("user_phone", userPhone)
+                        .addFormDataPart("content", text)
+                        .addFormDataPart("time", TimeUtil.getNowDateTime());
                 for (int i = 0; i < selectList.size(); i++) {
                     File f = null;
                     LocalMedia media = selectList.get(i);
@@ -250,6 +262,9 @@ public class AddArticleActivity extends AppCompatActivity {
                         multipartBodyBuilder.addFormDataPart("img", f.getName(), RequestBody.create(f, MediaType.parse("image/*")));
                 }
             }
+
+            String url = "http://"+getString(R.string.localhost)+"/Bookeeping/AddArticle";
+
             RequestBody requestBody = multipartBodyBuilder.build();
             Request request = new Request.Builder()
                     .url(url)
@@ -258,15 +273,38 @@ public class AddArticleActivity extends AppCompatActivity {
             new OkHttpClient().newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                    Message msg = mHandler.obtainMessage();
+                    msg.obj = "Failed";
+                    mHandler.sendMessage(msg);
                 }
 
                 @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
+                public void onResponse(@NotNull Call call, @NotNull Response response1) throws IOException {
+                    Message msg = mHandler.obtainMessage();
+                    msg.obj = response1;
+                    response = Objects.requireNonNull(response1.body()).string();
+                    mHandler.sendMessage(msg);
                 }
             });
 
+        }
+    };
+
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.i("Response", response);
+            if ("Failed".equals(response)) {
+                Toast.makeText(AddArticleActivity.this, "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
+            }
+            if("1".equals(response)){
+                Toast.makeText(AddArticleActivity.this,"发布成功",Toast.LENGTH_LONG).show();
+                finish();
+            }
+            if("0".equals(response)){
+                Toast.makeText(AddArticleActivity.this,"上传失败",Toast.LENGTH_LONG).show();
+            }
         }
     };
 

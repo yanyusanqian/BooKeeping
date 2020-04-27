@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_marginTop="1dp"
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white">
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/reply_headportrait"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/tupian"
+            android:scaleType="centerCrop"
+            app:civ_border_width="1dp"
+            app:civ_border_color="#FFFFFF"
+            />
+        <TextView
+            android:id="@+id/reply_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/banhei"
+            android:layout_toRightOf="@id/reply_headportrait"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp"
+            android:text="nnnnn"/>
+
+    </RelativeLayout>
+     <TextView
+         android:id="@+id/reply_content"
+         android:paddingLeft="60dp"
+         android:paddingBottom="10dp"
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:background="@color/white"
+         android:textColor="@color/banhei"
+         android:textSize="16sp"
+         android:text="很美的地方"/>
+</LinearLayout>

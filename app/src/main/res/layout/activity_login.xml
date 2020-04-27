@@ -108,6 +108,7 @@
         android:layout_marginRight="30dp"
         android:background="@drawable/bg_toolbar_gardient"
         android:text="@string/login"
+        android:textColor="@color/white"
         android:textSize="18sp" />
 
     <RelativeLayout

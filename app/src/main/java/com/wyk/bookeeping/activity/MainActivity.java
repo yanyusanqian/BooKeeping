@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onTabClickEvent(View view, int position) {
                         if (position == 4) {
-                            Toast.makeText(MainActivity.this, "请先登录", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MainActivity.this, "请先登录", Toast.LENGTH_SHORT).show();
                             //return true则拦截事件、不进行页面切换
                             return false;
                         } else if (position == 2) {

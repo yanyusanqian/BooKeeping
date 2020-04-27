@@ -19,7 +19,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
-                android:gravity="center">
+                android:gravity="center"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -47,6 +49,7 @@
                     android:layout_height="25dp"
                     android:layout_weight="1"
                     android:background="@null"
+                    android:textColorHint="@color/gray_dan"
                     android:hint="点击写备注..."
                     android:textSize="14sp" />
 

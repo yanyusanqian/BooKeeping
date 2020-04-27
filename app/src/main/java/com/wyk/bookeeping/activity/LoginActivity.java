@@ -1,7 +1,10 @@
 package com.wyk.bookeeping.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.InputType;
 import android.text.Selection;
 import android.text.Spannable;
@@ -21,6 +24,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.wyk.bookeeping.R;
+import com.wyk.bookeeping.utils.SpUtils;
+import com.wyk.bookeeping.utils.okhttpUtils;
+
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LoginActivity extends AppCompatActivity {
     private ImageView im_return, im_change;
@@ -28,6 +37,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText ed_password;
     private Button login, login_findpassword, login_register;
     private TextView phonenum_err, password_err;
+    private String response;
+    private String phonenum;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,34 +92,94 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         login.setOnClickListener(v -> {
-            String phonenum = ed_phonenum.getText().toString();
+            phonenum = ed_phonenum.getText().toString();
             String password = ed_password.getText().toString();
-            if (!TextUtils.isEmpty(phonenum)&&!TextUtils.isEmpty(password)) {
+            if (!TextUtils.isEmpty(phonenum) && !TextUtils.isEmpty(password)) {
+                if (phonenum.length() != 11) {
+                    phonenum_err.setText("长度不太对哦~请输入正确的手机号");
+                    return;
+                }
+                Pattern p = Pattern.compile("^1[3|4|5|7|8][0-9]\\d{4,8}$");
+                Matcher m = p.matcher(phonenum);
+                boolean isMatch = m.matches();
+                if (!isMatch) {
+                    phonenum_err.setText("请输入正确的手机号");
+                    return;
+                }
+                new Thread() {
+                    @Override
+                    public void run() {
+                        HashMap<String, String> params = new HashMap<>();
+                        params.put("user_phone", phonenum);
+                        params.put("user_password", password);
+                        try {
+                            Log.i("HERE", "33333");
+                            String url = "http://" + getString(R.string.localhost) + "/Bookeeping/LoginUser";
+                            Log.i("HERE url", url);
+                            response = okhttpUtils.getInstance().Connection(url, params);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Message msg = mHandler.obtainMessage();
+                            msg.obj = "wrong";
+                            mHandler.sendMessage(msg);
+                        }
+                        Message msg = mHandler.obtainMessage();
+                        msg.obj = response;
+                        mHandler.sendMessage(msg);
+                    }
+                }.start();
 
-            }else{
-                Toast.makeText(LoginActivity.this,"请正确输入",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(LoginActivity.this, "请正确输入", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.i("Login Response",response);
+            if("Failed".equals(response)){
+                Toast.makeText(LoginActivity.this,"网络错误，请稍后再试",Toast.LENGTH_SHORT).show();
+            }
+            if ("2".equals(response)) {
+                SpUtils.putString(LoginActivity.this, "USERPHONE", phonenum);
+                SpUtils.putString(LoginActivity.this, "USERNAME", "未命名");
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+            }
+            if ("0".equals(response)) {
+                phonenum_err.setText("手机号不存在");
+            }
+            if ("1".equals(response)) {
+                phonenum_err.setText("手机号不存在或密码错误");
+            }
+            if("wrong".equals(msg.obj+"")){
+                Toast.makeText(LoginActivity.this,"网络连接失败，请稍后再试",Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+
     private void loseFocusListener() {
         //失去焦点验证
-        phonenum_err.setOnFocusChangeListener((v, hasFocus) -> {
+        ed_phonenum.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 // 此处为失去焦点时的处理内容
-                String username = phonenum_err.getText().toString();
+                String username = ed_phonenum.getText().toString();
                 if (TextUtils.isEmpty(username)) {
                     phonenum_err.setText("请输入手机号");
                 }
             }
         });
 
-        phonenum_err.setOnFocusChangeListener((v, hasFocus) -> {
+        ed_password.setOnFocusChangeListener((v, hasFocus) -> {
             if (!hasFocus) {
                 // 此处为失去焦点时的处理内容
-                String password = phonenum_err.getText().toString();
+                String password = ed_password.getText().toString();
                 if (TextUtils.isEmpty(password)) {
-                    phonenum_err.setText("请输入密码");
+                    password_err.setText("请输入密码");
                 }
             }
         });
@@ -121,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == 0 && resultCode == RegisterActivity.RESULT_OK) {
             Bundle bundle = data.getExtras();
             if (bundle != null) {
-                ed_phonenum.setText(bundle.getString("phonenum"));
+                ed_phonenum.setText(bundle.getString("userphone"));
                 ed_password.setText(bundle.getString("password"));
             }
             Toast.makeText(this, "已注册", Toast.LENGTH_SHORT).show();

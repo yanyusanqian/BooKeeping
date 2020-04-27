@@ -1,5 +1,6 @@
 package com.wyk.bookeeping.fragment;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -11,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,8 +25,13 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.appbar.AppBarLayout;
 import com.wyk.bookeeping.R;
+import com.wyk.bookeeping.activity.ChangeUserMsgActivity;
+import com.wyk.bookeeping.activity.LoginActivity;
 import com.wyk.bookeeping.adpter.CenterRecyclerViewAdapter;
 import com.wyk.bookeeping.bean.Account;
 import com.wyk.bookeeping.bean.CenterItem;
@@ -42,17 +50,21 @@ public class CenterFragment extends Fragment {
     private Toolbar toolbar;
     private List<String> list;
     private AppBarLayout appbar;
-    private TextView textView,totaldays,total;
+    private TextView textView, totaldays, total, center_username;
+    private LinearLayout center_login;
+    private ImageView center_image;
 
     private List<CenterItem> centerItemList;
     private CenterItem centerItem;
     private CenterRecyclerViewAdapter centerRecyclerViewAdapter;
     private AccountViewModel accountViewModel;
     private List<Account> accountList;
+    private String username="";
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_center, container,false);
+        return inflater.inflate(R.layout.fragment_center, container, false);
     }
 
     @Override
@@ -71,14 +83,14 @@ public class CenterFragment extends Fragment {
                 centerRecyclerViewAdapter.notifyDataSetChanged();
             }
         });
-
     }
 
-    private void upDateTotal(){
+
+
+    private void upDateTotal() {
         String num = DBHelper.getInstance(getActivity()).getAllAccountNum(getActivity());
         total.setText(num);
     }
-
 
 
     private void initRecyclerViewItemData() {
@@ -103,17 +115,18 @@ public class CenterFragment extends Fragment {
         centerItemList.add(centerItem);
     }
 
-    private void initRecyclerView(){
-        centerRecyclerViewAdapter = new CenterRecyclerViewAdapter(getActivity(),centerItemList);
-        recyclerView_center = (RecyclerView)getActivity().findViewById(R.id.recyclerView_center);
+    private void initRecyclerView() {
+        centerRecyclerViewAdapter = new CenterRecyclerViewAdapter(getActivity(), centerItemList);
+        recyclerView_center = (RecyclerView) getActivity().findViewById(R.id.recyclerView_center);
         recyclerView_center.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView_center.setAdapter(centerRecyclerViewAdapter);
         recyclerView_center.addItemDecoration(new SpacesItemDecoration(20));
     }
-    private void initView(){
-        list  = new ArrayList<>();
-        for(int x = 0; x < 20; x++){
-            list.add("x:"+x);
+
+    private void initView() {
+        list = new ArrayList<>();
+        for (int x = 0; x < 20; x++) {
+            list.add("x:" + x);
         }
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.center_toolbar);
@@ -121,6 +134,9 @@ public class CenterFragment extends Fragment {
         textView = (TextView) getActivity().findViewById(R.id.textview);
         totaldays = (TextView) getActivity().findViewById(R.id.totaldays);
         total = (TextView) getActivity().findViewById(R.id.total);
+        center_username = (TextView) getActivity().findViewById(R.id.center_username);
+        center_login = (LinearLayout) getActivity().findViewById(R.id.center_login);
+        center_image = (ImageView) getActivity().findViewById(R.id.center_image);
 
 
         final int alphaMaxOffset = dpToPx(130);
@@ -139,14 +155,24 @@ public class CenterFragment extends Fragment {
                 }
             }
         });
+
+        /*String username = SpUtils.getString(getActivity(), "USERNAME", "未登录");
+        center_username.setText(username);*/
+
+        center_login.setOnClickListener(v -> {
+            if (username.equals("未登录"))
+                getActivity().startActivity(new Intent(getActivity(), LoginActivity.class));
+            else
+                getActivity().startActivity(new Intent(getActivity(), ChangeUserMsgActivity.class));
+        });
     }
 
     private void initToolBar() {
-        String FirstDate = SpUtils.getString(getActivity(),"FIRST_INSTALL_TIME");
+        String FirstDate = SpUtils.getString(getActivity(), "FIRST_INSTALL_TIME");
         String nowDate = TimeUtil.getNowDate();
-        if(!"".equals(FirstDate)){
-            String days = TimeUtil.getBetweenDays(FirstDate,nowDate);
-            if(!TextUtils.isEmpty(days)){
+        if (!"".equals(FirstDate)) {
+            String days = TimeUtil.getBetweenDays(FirstDate, nowDate);
+            if (!TextUtils.isEmpty(days)) {
                 totaldays.setText(days);
             }
         }
@@ -237,5 +263,16 @@ public class CenterFragment extends Fragment {
     public void onResume() {
         super.onResume();
         centerRecyclerViewAdapter.notifyDataSetChanged();
+        username = SpUtils.getString(getActivity(), "USERNAME", "未登录");
+        center_username.setText(username);
+        String img = SpUtils.getString(getActivity(),"USERIMAGE","");
+        RequestOptions options = new RequestOptions()
+                .centerCrop()
+                .placeholder(R.mipmap.headportrait)
+                .diskCacheStrategy(DiskCacheStrategy.ALL);
+        Glide.with(getActivity())
+                .load("http://"+getActivity().getString(R.string.localhost)+"/pic_file/"+img)
+                .apply(options)
+                .into(center_image);
     }
 }
