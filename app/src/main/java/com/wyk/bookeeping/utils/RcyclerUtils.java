@@ -20,7 +20,7 @@ public class RcyclerUtils {
 
         List<Map<String, Object>> title;
         if (list.size() != 0) {
-            int day = getDateDay(list.get(0).getTime());
+            int day = getDateDay(TimeUtil.string2Date(list.get(0).getBill_time(),"yyyy-MM-dd"));
             int num = 0;
             float it_expenditure = 0;
             float it_income = 0;
@@ -31,14 +31,14 @@ public class RcyclerUtils {
             title.add(map);
 
             for (int i = 0; i < list.size(); i++) {
-                int item_day = getDateDay(list.get(i).getTime());
-                float count = list.get(i).getCount();
+                int item_day = getDateDay(TimeUtil.string2Date(list.get(i).getBill_time(),"yyyy-MM-dd"));
+                float count = list.get(i).getBill_count();
                 list.get(i).setView_type(VIEW_ITEM);
 
                 if (day == item_day) {
                     num++;
                     if (i == list.size() - 1) {
-                        if (list.get(i).getInexType() == 1) {
+                        if (list.get(i).getBill_inexType() == 1) {
                             title.get(title.size() - 1).put("ex", it_expenditure + count);
                             title.get(title.size() - 1).put("in", it_income);
                         } else {
@@ -50,7 +50,7 @@ public class RcyclerUtils {
                             map.put("adress", num + sum + title.size());
                             title.add(map);
 
-                            if (list.get(i).getInexType() == 1) {
+                            if (list.get(i).getBill_inexType() == 1) {
                                 title.get(title.size() - 1).put("ex", it_expenditure + count);
                                 title.get(title.size() - 1).put("in", it_income);
                             } else {
@@ -78,7 +78,7 @@ public class RcyclerUtils {
 
                     if (i == list.size() - 1) {
                         Log.i("LIST adress", "" + title.get(title.size() - 1).get("adress"));
-                        if (list.get(i).getInexType() == 1) {
+                        if (list.get(i).getBill_inexType() == 1) {
                             title.get(title.size() - 1).put("ex", it_expenditure + count);
                             title.get(title.size() - 1).put("in", it_income);
                         } else {
@@ -88,7 +88,7 @@ public class RcyclerUtils {
                     }
                 }
 
-                if (list.get(i).getInexType() == 1) {
+                if (list.get(i).getBill_inexType() == 1) {
                     it_expenditure += count;
                 } else {
                     it_income += count;

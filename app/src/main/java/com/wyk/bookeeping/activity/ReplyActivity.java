@@ -9,6 +9,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -49,7 +50,7 @@ public class ReplyActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reply);
+        setContentView(R.layout.test);
 
         Intent intent = getIntent();
         article_id = intent.getIntExtra("article_id",0);
@@ -100,12 +101,14 @@ public class ReplyActivity extends AppCompatActivity {
         //配置适配器
         post_images_recycler.setAdapter(adapter);
 
+
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         reply_recyclerview.setLayoutManager(mLayoutManager);
         reply_recyclerview.addItemDecoration(new SpacesItemDecoration(1));
         List<Reply> replies = new ArrayList<>();
         replyAdapter = new ReplyAdapter(ReplyActivity.this,replies);
         reply_recyclerview.setAdapter(replyAdapter);
+        reply_recyclerview.setNestedScrollingEnabled(false);
         setReplyData();
         Reply();
     }
@@ -177,6 +180,14 @@ public class ReplyActivity extends AppCompatActivity {
                         Log.i("TAG Reply item",list.get(i).getReply_content());
                     }
                     Log.i("TAG Reply",list.toString());
+
+                    reply_edit.setText("");
+                    InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                    View v = getWindow().peekDecorView();
+                    if (null != v) {
+                        imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    }
+
                     replyAdapter.setTextList(list);
                     replyAdapter.notifyDataSetChanged();
                 }

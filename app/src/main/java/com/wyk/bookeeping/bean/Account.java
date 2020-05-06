@@ -4,21 +4,21 @@ import java.util.Date;
 
 public class Account {
     // 单笔id值
-    private Long id;
+    private Long bill_id;
     // 账号id,用于连接用户表，用户仅使用本地功能时可以为空
     private Long user_id;
     // 单笔金额
-    private float count;
+    private float bill_count;
     // 单笔类型，收入0或支出1
-    private int inexType;
+    private int bill_inexType;
     // 具体类型，如出游、餐饮等
-    private String detailType;
+    private String bill_detailType;
     // 具体类型图标，应为R.drawable.xx
-    private int imgRes;
+    private int bill_imgRes;
     // 记账时间
-    private Date time;
+    private String bill_time;
     // 备注
-    private String note;
+    private String bill_note;
     // 该条数据是否为title，是为1，不是为0
     private int view_type;
     // 某个日期的总支出
@@ -30,32 +30,33 @@ public class Account {
 
     public Account(){}
 
-    public Account(String detailType,int imgRes,float count,int num) {
-        this.count = count;
-        this.detailType = detailType;
-        this.imgRes = imgRes;
+    public Account(String bill_detailType,int bill_imgRes,float bill_count, int num) {
+        this.bill_count = bill_count;
+        this.bill_detailType = bill_detailType;
+        this.bill_imgRes = bill_imgRes;
         this.num = num;
     }
 
-    public Account(Long id, float count, int inexType, String detailType, int imgRes, Date time, String note) {
-        this.id = id;
-        this.count = count;
-        this.inexType = inexType;
-        this.detailType = detailType;
-        this.imgRes = imgRes;
-        this.time = time;
-        this.note = note;
+
+    public Account(Long bill_id, float bill_count, int bill_inexType, String bill_detailType, int bill_imgRes, String bill_time, String bill_note) {
+        this.bill_id = bill_id;
+        this.bill_count = bill_count;
+        this.bill_inexType = bill_inexType;
+        this.bill_detailType = bill_detailType;
+        this.bill_imgRes = bill_imgRes;
+        this.bill_time = bill_time;
+        this.bill_note = bill_note;
     }
 
-    public Account(Long id, Long user_id, float count, int inexType, String detailType, int imgRes, Date time, String note) {
-        this.id = id;
+    public Account(Long bill_id, Long user_id, float bill_count, int bill_inexType, String bill_detailType, int bill_imgRes, String bill_time, String bill_note) {
+        this.bill_id = bill_id;
         this.user_id = user_id;
-        this.count = count;
-        this.inexType = inexType;
-        this.detailType = detailType;
-        this.imgRes = imgRes;
-        this.time = time;
-        this.note = note;
+        this.bill_count = bill_count;
+        this.bill_inexType = bill_inexType;
+        this.bill_detailType = bill_detailType;
+        this.bill_imgRes = bill_imgRes;
+        this.bill_time = bill_time;
+        this.bill_note = bill_note;
     }
 
     public int getNum() {
@@ -90,12 +91,12 @@ public class Account {
         this.title_income = title_income;
     }
 
-    public Long getId() {
-        return id;
+    public Long getBill_id() {
+        return bill_id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setBill_id(Long bill_id) {
+        this.bill_id = bill_id;
     }
 
     public Long getUser_id() {
@@ -106,68 +107,69 @@ public class Account {
         this.user_id = user_id;
     }
 
-    public float getCount() {
-        return count;
+    public float getBill_count() {
+        return bill_count;
     }
 
-    public void setCount(float count) {
-        this.count = count;
+    public void setBill_count(float bill_count) {
+        this.bill_count = bill_count;
     }
 
-    public int getInexType() {
-        return inexType;
+    public int getBill_inexType() {
+        return bill_inexType;
     }
 
-    public void setInexType(int inexType) {
-        this.inexType = inexType;
+    public void setBill_inexType(int bill_inexType) {
+        this.bill_inexType = bill_inexType;
     }
 
-    public String getDetailType() {
-        return detailType;
+    public String getBill_detailType() {
+        return bill_detailType;
     }
 
-    public void setDetailType(String detailType) {
-        this.detailType = detailType;
+    public void setBill_detailType(String bill_detailType) {
+        this.bill_detailType = bill_detailType;
     }
 
-    public int getImgRes() {
-        return imgRes;
+    public int getBill_imgRes() {
+        return bill_imgRes;
     }
 
-    public void setImgRes(int imgRes) {
-        this.imgRes = imgRes;
+    public void setBill_imgRes(int bill_imgRes) {
+        this.bill_imgRes = bill_imgRes;
     }
 
-    public Date getTime() {
-        return time;
+    public String getBill_time() {
+        return bill_time;
     }
 
-    public void setTime(Date time) {
-        this.time = time;
+    public void setBill_time(String bill_time) {
+        this.bill_time = bill_time;
     }
 
-    public String getNote() {
-        return note;
+    public String getBill_note() {
+        return bill_note;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setBill_note(String bill_note) {
+        this.bill_note = bill_note;
     }
 
     @Override
     public String toString() {
         return "Account{" +
-                "id=" + id +
+                "bill_id=" + bill_id +
                 ", user_id=" + user_id +
-                ", count=" + count +
-                ", inexType=" + inexType +
-                ", detailType='" + detailType + '\'' +
-                ", imgRes=" + imgRes +
-                ", time=" + time +
-                ", note='" + note + '\'' +
+                ", bill_count=" + bill_count +
+                ", bill_inexType=" + bill_inexType +
+                ", bill_detailType='" + bill_detailType + '\'' +
+                ", bill_imgRes=" + bill_imgRes +
+                ", bill_time=" + bill_time +
+                ", bill_note='" + bill_note + '\'' +
                 ", view_type=" + view_type +
                 ", title_expenditure=" + title_expenditure +
                 ", title_income=" + title_income +
+                ", num=" + num +
                 '}';
     }
 }

@@ -32,6 +32,7 @@ import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.activity.AddBudgetActivity;
 import com.wyk.bookeeping.activity.AddRemindActivity;
 import com.wyk.bookeeping.activity.DragIconsActivity;
+import com.wyk.bookeeping.activity.testActivity;
 import com.wyk.bookeeping.bean.CenterItem;
 import com.wyk.bookeeping.utils.DBHelper;
 import com.wyk.bookeeping.utils.SpUtils;
@@ -108,6 +109,7 @@ public class CenterRecyclerViewAdapter extends RecyclerView.Adapter<CenterRecycl
                 iconsHolder.center_massage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        context.startActivity(new Intent(context, testActivity.class));
 
                     }
                 });
@@ -178,7 +180,6 @@ public class CenterRecyclerViewAdapter extends RecyclerView.Adapter<CenterRecycl
                     }else{
                         entries.add(new PieEntry((expenditure/budget)*100, "支出"));
                         entries.add(new PieEntry((surplus/budget)*100, "余额"));
-                        Log.i("TAG xx",(int)((surplus/budget)*100)+"");
                         budgetHolder.mPieChart.setCenterText(generateCenterSpannableText((int)((surplus/budget)*100)));//设置环中间文字
                     }
                     budgetHolder.center_budget_show.setVisibility(View.VISIBLE);

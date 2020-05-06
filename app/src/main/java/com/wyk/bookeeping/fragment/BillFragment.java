@@ -1,9 +1,13 @@
 package com.wyk.bookeeping.fragment;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,13 +27,17 @@ import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
 import com.wyk.bookeeping.R;
+import com.wyk.bookeeping.activity.BookkeepingActivity;
+import com.wyk.bookeeping.activity.MainActivity;
 import com.wyk.bookeeping.adpter.BillListAdapter;
 import com.wyk.bookeeping.bean.Account;
 import com.wyk.bookeeping.bean.DataStatus;
 import com.wyk.bookeeping.livedata.AccountViewModel;
 import com.wyk.bookeeping.utils.DBHelper;
 import com.wyk.bookeeping.utils.RcyclerUtils;
+import com.wyk.bookeeping.utils.SpUtils;
 import com.wyk.bookeeping.utils.TimeUtil;
+import com.wyk.bookeeping.utils.okhttpUtils;
 import com.yanzhenjie.recyclerview.OnItemMenuClickListener;
 import com.yanzhenjie.recyclerview.SwipeMenu;
 import com.yanzhenjie.recyclerview.SwipeMenuBridge;
@@ -39,6 +47,7 @@ import com.yanzhenjie.recyclerview.SwipeRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class BillFragment extends Fragment {
@@ -48,8 +57,10 @@ public class BillFragment extends Fragment {
     private TextView bill_income, bill_expenditure, bill_month, bill_year;
     private BillListAdapter billListAdapter;
     private SwipeRecyclerView bill_recyclerview;
-    private String now_month,now_year;
+    private String now_month,now_year,response;
     private AccountViewModel accountViewModel;
+    private Long bill_id;
+    private int year,mouth;
 
     @Nullable
     @Override
@@ -99,10 +110,10 @@ public class BillFragment extends Fragment {
         float mouth_income = 0;
         for (int i = 0; i < accountList.size(); i++) {
             if (accountList.get(i).getView_type() != 1) {
-                if (accountList.get(i).getInexType() == 1) {
-                    mouth_expenditure += accountList.get(i).getCount();
+                if (accountList.get(i).getBill_inexType() == 1) {
+                    mouth_expenditure += accountList.get(i).getBill_count();
                 } else {
-                    mouth_income += accountList.get(i).getCount();
+                    mouth_income += accountList.get(i).getBill_count();
                 }
             }
         }
@@ -201,7 +212,7 @@ public class BillFragment extends Fragment {
                 Account account = new Account(
                         cursor.getLong(0), cursor.getFloat(2), cursor.getInt(3),
                         cursor.getString(4), cursor.getInt(5),
-                        TimeUtil.string2Date(cursor.getString(6), "yyyy-MM-dd")
+                        cursor.getString(6)
                         , cursor.getString(7));
                 accountList.add(account);
             }
@@ -224,23 +235,82 @@ public class BillFragment extends Fragment {
                     Toast.makeText(getActivity(), "暂不支持按日删除账单，敬请期待", Toast.LENGTH_SHORT)
                             .show();
                 } else {
-                    Long id = accountList_recycler.get(position).getId();
-                    int mouth = TimeUtil.getDateMonth(accountList_recycler.get(position).getTime()) + 1;
-                    int year = TimeUtil.getYear(accountList_recycler.get(position).getTime());
-                    db.delete("account", "_id = ?", new String[]{String.valueOf(id)});
-                    if (mouth < 10) {
-                        accountList = DBHelper.getInstance(getContext()).getFirstAccountList(getActivity(),year+"","0" + mouth);
-                    } else {
-                        accountList = DBHelper.getInstance(getContext()).getFirstAccountList(getActivity(),year+"","" + mouth);
+                    bill_id = accountList_recycler.get(position).getBill_id();
+                    mouth = TimeUtil.getDateMonth(TimeUtil.string2Date(accountList_recycler.get(position).getBill_time(),"yyyy-MM-dd")) + 1;
+                    year = TimeUtil.getYear(TimeUtil.string2Date(accountList_recycler.get(position).getBill_time(),"yyyy-MM-dd"));
+                    String userPhone = SpUtils.getString(getActivity(),"USERPHONE","");
+                    if(!"".equals(userPhone)){
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                HashMap<String, String> params = new HashMap<>();
+                                params.put("user_phone", userPhone);
+                                params.put("bill_id", String.valueOf(bill_id));
+                                try {
+                                    String url = "http://" + getString(R.string.localhost) + "/Bookeeping/deleteAccount";
+                                    response = okhttpUtils.getInstance().Connection(url, params);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    Message msg = mHandler.obtainMessage();
+                                    msg.obj = "wrong";
+                                    mHandler.sendMessage(msg);
+                                }
+                                Message msg = mHandler.obtainMessage();
+                                msg.obj = response;
+                                mHandler.sendMessage(msg);
+                            }
+                        }.start();
+                    }else{
+                        db.delete("account", "_id = ?", new String[]{String.valueOf(bill_id)});
+                        if (mouth < 10) {
+                            accountList = DBHelper.getInstance(getContext()).getFirstAccountList(getActivity(),year+"","0" + mouth);
+                        } else {
+                            accountList = DBHelper.getInstance(getContext()).getFirstAccountList(getActivity(),year+"","" + mouth);
+                        }
+                        accountList_recycler = RcyclerUtils.listAddType(accountList);
+                        DataStatus dataStatus = new DataStatus();
+                        dataStatus.setAccountList(accountList);
+                        dataStatus.setAccountList_recycler(accountList_recycler);
+                        accountViewModel.getCurrentName().setValue(dataStatus);
+                        initToolBarDate(year+"");
                     }
-                    accountList_recycler = RcyclerUtils.listAddType(accountList);
-                    DataStatus dataStatus = new DataStatus();
-                    dataStatus.setAccountList(accountList);
-                    dataStatus.setAccountList_recycler(accountList_recycler);
-                    accountViewModel.getCurrentName().setValue(dataStatus);
-                    initToolBarDate(year+"");
+
                 }
             }
+        }
+    };
+
+    /**
+     * 异步通讯回传数据处理
+     */
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if("1".equals(response)) {
+                db.delete("account", "_id = ?", new String[]{String.valueOf(bill_id)});
+                if (mouth < 10) {
+                    accountList = DBHelper.getInstance(getContext()).getFirstAccountList(getActivity(),year+"","0" + mouth);
+                } else {
+                    accountList = DBHelper.getInstance(getContext()).getFirstAccountList(getActivity(),year+"","" + mouth);
+                }
+                accountList_recycler = RcyclerUtils.listAddType(accountList);
+                DataStatus dataStatus = new DataStatus();
+                dataStatus.setAccountList(accountList);
+                dataStatus.setAccountList_recycler(accountList_recycler);
+                accountViewModel.getCurrentName().setValue(dataStatus);
+                initToolBarDate(year+"");
+            }
+            if ("Failed".equals(response)) {
+                Toast.makeText(getActivity(), "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
+            }
+            if ("wrong".equals(msg.obj + "")) {
+                Toast.makeText(getActivity(), "网络连接失败，请稍后再试", Toast.LENGTH_SHORT).show();
+            }
+            if ("0".equals(response)) {
+                Toast.makeText(getActivity(), "删除失败", Toast.LENGTH_SHORT).show();
+            }
+
         }
     };
 

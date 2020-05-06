@@ -14,10 +14,10 @@
         android:layout_width="160dp"
         android:layout_height="42dp"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="60dp"
         android:background="@drawable/button_shape"
         android:text="点击进入"
-        android:textColor="#ce102c"
+        android:textColor="#8A2BE2"
         android:textSize="18sp"
         android:visibility="visible" />
 

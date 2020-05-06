@@ -41,6 +41,7 @@ import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.permissions.RxPermissions;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.GridImageAdapter;
+import com.wyk.bookeeping.utils.DBHelper;
 import com.wyk.bookeeping.utils.SpUtils;
 import com.wyk.bookeeping.utils.TimeUtil;
 import com.wyk.bookeeping.utils.okhttpUtils;
@@ -146,6 +147,9 @@ public class ChangeUserMsgActivity extends AppCompatActivity {
         personal_logout.setOnClickListener(v -> {
             SpUtils.remove(ChangeUserMsgActivity.this, "USERPHONE");
             SpUtils.remove(ChangeUserMsgActivity.this, "USERNAME");
+            SpUtils.remove(ChangeUserMsgActivity.this, "USERIMAGE");
+            SpUtils.remove(ChangeUserMsgActivity.this, "USERSTATUS");
+            DBHelper.getInstance(ChangeUserMsgActivity.this).deleteAccount(ChangeUserMsgActivity.this);
             finish();
         });
 

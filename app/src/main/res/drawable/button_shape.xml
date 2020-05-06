@@ -4,12 +4,12 @@
 <!--     <solid android:color="#ce102c"/>
  -->    
     <stroke android:width="0.5dp" 
-        android:color="#ce102c"/>
+        android:color="#8A2BE2"/>
 
     <corners android:radius="200dp" />
     
     <solid
-        android:color="@android:color/transparent"
+        android:color="@color/white"
          />
 
     <padding

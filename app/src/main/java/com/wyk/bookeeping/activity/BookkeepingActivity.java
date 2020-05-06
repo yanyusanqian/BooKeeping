@@ -1,5 +1,6 @@
 package com.wyk.bookeeping.activity;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -48,10 +51,12 @@ import com.wyk.bookeeping.utils.DBHelper;
 import com.wyk.bookeeping.utils.JsonParser;
 import com.wyk.bookeeping.utils.SpUtils;
 import com.wyk.bookeeping.utils.TimeUtil;
+import com.wyk.bookeeping.utils.okhttpUtils;
 
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -64,8 +69,10 @@ public class BookkeepingActivity extends AppCompatActivity {
     private Button btn_cancle;
     private FloatingActionButton bk_speech_button;
     private RecognizerDialog mIatDialog;
-    private String type, detils, count;
+    private String type, detils, c,inexType,response,time;
     private List<Icons> data_list;
+    private Float count;
+    private int imgRes;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,7 +80,7 @@ public class BookkeepingActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         setContentView(R.layout.activity_bookkeeping);
 
-        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=" + "你自己的id");
+        SpeechUtility.createUtility(this, SpeechConstant.APPID + "=" + "5e9a5589");
 
         String json = SpUtils.getString(this, "ExIconsList");
         if (!TextUtils.isEmpty(json)) {
@@ -157,6 +164,7 @@ public class BookkeepingActivity extends AppCompatActivity {
 
             DialogSettings.style = DialogSettings.STYLE_IOS;
             DialogSettings.use_blur = false;
+            String userPhone = SpUtils.getString(BookkeepingActivity.this,"USERPHONE","");
 
             String text = JsonParser.parseIatResult(results.getResultString());
             Log.d("TAG Speech", "recognizer result text：" + text);
@@ -180,53 +188,72 @@ public class BookkeepingActivity extends AppCompatActivity {
                         text2 = text2.replaceAll("元", "");
                     }
 
-                    count = text2.replaceAll("[\u4e00-\u9fa5]*", "");
-                    detils = text2.replaceAll(count, "");
+                    c = text2.replaceAll("[\u4e00-\u9fa5]*", "");
+                    detils = text2.replaceAll(c, "");
                     if (detils.equals("")) {
                         detils = "其他";
                     }
 
                     SelectDialog.show(BookkeepingActivity.this, "正确 符合规范",
                             "识别结果为:" + text + "\n记账类型:" + type + "\n记账类别:"
-                                    + detils + "\n记账金额:" + count, (dialog, which) -> {
-                                // 获取单例DBHelper
-                                DBHelper dbHelper = DBHelper.getInstance(BookkeepingActivity.this);
-                                // 创建一个新的SqliteDatabase对象
-                                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                                // 创建新的ContentValues对象，将数据存入其中
-                                ContentValues values = new ContentValues();
-                                Float c = Float.valueOf(count);
-                                if(c%1==0){
-                                    values.put("count", Math.abs(Double.valueOf(count)));
-                                }else {
-                                    DecimalFormat decimalFormat = new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-                                    Log.i("TAG count",count);
-                                    String p1 = decimalFormat.format(c);
-                                    values.put("count", Float.valueOf(p1));
+                                    + detils + "\n记账金额:" + c, (dialog, which) -> {
+                                if (Float.valueOf(c) % 1 == 0) {
+                                    count = Math.abs(Float.valueOf(c));
+                                } else {
+                                    DecimalFormat decimalFormat = new DecimalFormat(".00");
+                                    String p2 = decimalFormat.format(Float.valueOf(c));
+                                    count = Float.valueOf(p2);
                                 }
+
                                 if("支出".equals(type)){
-                                    values.put("inexType", 1);
+                                    inexType =  "1";
                                 }else{
-                                    values.put("inexType", 0);
+                                    inexType =  "0";
                                 }
+
                                 int flag = 0;
-                                values.put("detailType", detils);
                                 for(int i =0;i<data_list.size();i++){
                                     if(detils.equals(data_list.get(i).getTitle())){
                                         flag = 1;
-                                        values.put("imgRes", data_list.get(i).getDrawableid());
+                                        imgRes =  data_list.get(i).getDrawableid();
                                     }
                                 }
                                 if(flag == 0){
-                                    values.put("imgRes", R.drawable.n_bonus);
+                                   imgRes= R.drawable.n_bonus;
                                 }
-                                values.put("time", TimeUtil.getNowDateTime());
-                                values.put("note", detils);
-                                // 插入数据
-                                Log.i("TAG",values.toString());
-                                db.insert("account", null, values);
-                                startActivity(new Intent(BookkeepingActivity.this, MainActivity.class));
-                                finish();
+                                time =  TimeUtil.getNowDate();
+                                // 如果用户登陆
+                                if (!"".equals(userPhone)) {
+                                    new Thread() {
+                                        @Override
+                                        public void run() {
+                                            HashMap<String, String> params = new HashMap<>();
+                                            params.put("user_phone", userPhone);
+                                            params.put("bill_count", count + "");
+                                            params.put("bill_inexType", inexType);
+                                            params.put("bill_detailType", detils);
+                                            params.put("bill_imgRes", imgRes + "");
+                                            params.put("bill_time",time);
+                                            params.put("bill_note", detils);
+                                            try {
+                                                String url = "http://" + getString(R.string.localhost) + "/Bookeeping/AddAccount";
+                                                response = okhttpUtils.getInstance().Connection(url, params);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                Message msg = mHandler.obtainMessage();
+                                                msg.obj = "wrong";
+                                                mHandler.sendMessage(msg);
+                                            }
+                                            Message msg = mHandler.obtainMessage();
+                                            msg.obj = response;
+                                            mHandler.sendMessage(msg);
+                                        }
+                                    }.start();
+                                } else {
+                                    InsertAccountInLocalSql(0);
+                                    startActivity(new Intent(BookkeepingActivity.this, MainActivity.class));
+                                    finish();
+                                }
                             });
                 } else {
                     MessageDialog.show(BookkeepingActivity.this, "错误 不符合规范", "识别结果为:" + text);
@@ -241,6 +268,51 @@ public class BookkeepingActivity extends AppCompatActivity {
             Log.i("TAG Speech err", error.getPlainDescription(true));
         }
 
+    };
+
+    /**
+     * 向本地数据库插入账单数据
+     */
+    private void InsertAccountInLocalSql(int id) {
+        // 获取单例DBHelper
+        DBHelper dbHelper = DBHelper.getInstance(BookkeepingActivity.this);
+        // 创建一个新的SqliteDatabase对象
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // 创建新的ContentValues对象，将数据存入其中
+        ContentValues values = new ContentValues();
+        if(id!=0)
+            values.put("_id",id);
+        values.put("count", count);
+        values.put("inexType", inexType);
+        values.put("detailType",detils);
+        values.put("imgRes", imgRes+"");
+        values.put("time", time);
+        values.put("note", detils);
+        // 插入数据
+        Log.i("TAG 11:", values.toString());
+        db.insert("account", null, values);
+    }
+
+    /**
+     * 异步通讯回传数据处理
+     */
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if ("Failed".equals(response)) {
+                Toast.makeText(BookkeepingActivity.this, "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else if ("wrong".equals(msg.obj + "")) {
+                Toast.makeText(BookkeepingActivity.this, "网络连接失败，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else if ("0".equals(response)) {
+                Toast.makeText(BookkeepingActivity.this, "插入失败", Toast.LENGTH_SHORT).show();
+            } else {
+                int id = Integer.parseInt(response);
+                InsertAccountInLocalSql(id);
+                startActivity(new Intent(BookkeepingActivity.this, MainActivity.class));
+                finish();
+            }
+        }
     };
 
     /**

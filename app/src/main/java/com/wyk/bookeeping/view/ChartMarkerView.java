@@ -58,10 +58,10 @@ public class ChartMarkerView extends MarkerView {
             //收入
             if (e.getY() == 0) {
                 chartmarkerview_text.setText("暂无");
-                chartmarkerview_date.setText((int)(e.getX()+1)+"号");
+                chartmarkerview_date.setText("No."+(int)(e.getX()+1));
             } else {
-                chartmarkerview_text.setText(e.getY() + "");
-                chartmarkerview_date.setText((int)(e.getX()+1)+"号");
+                chartmarkerview_text.setText(e.getY() + "元");
+                chartmarkerview_date.setText("No."+(int)(e.getX()+1));
             }
         } catch (Exception e1) {
             e1.printStackTrace();

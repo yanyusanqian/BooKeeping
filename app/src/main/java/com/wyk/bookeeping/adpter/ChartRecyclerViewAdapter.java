@@ -49,11 +49,11 @@ public class ChartRecyclerViewAdapter extends RecyclerView.Adapter<ChartRecycler
 
     @Override
     public void onBindViewHolder(@NonNull ChartRecyclerViewAdapter.ViewHolder holder, int position) {
-        holder.chartdetails_text.setText(list.get(position).getDetailType());
+        holder.chartdetails_text.setText(list.get(position).getBill_detailType());
         holder.chartdetails_num.setText(String.valueOf(list.get(position).getNum()));
-        holder.chartdetails_imageview.setImageResource(list.get(position).getImgRes());
+        holder.chartdetails_imageview.setImageResource(list.get(position).getBill_imgRes());
         if (allCount!=null){
-            float precent = list.get(position).getCount()/allCount;
+            float precent = list.get(position).getBill_count()/allCount;
             NumberFormat nt = NumberFormat.getPercentInstance();//获取格式化对象
             nt.setMinimumFractionDigits(1);
             holder.chartdetails_percent.setText(nt.format(precent));

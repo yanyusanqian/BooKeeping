@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,6 +32,7 @@ import com.bigkoo.pickerview.view.TimePickerView;
 import com.codingending.popuplayout.PopupLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.wyk.bookeeping.activity.LoginActivity;
 import com.wyk.bookeeping.activity.MainActivity;
 import com.wyk.bookeeping.R;
 import com.wyk.bookeeping.adpter.IconsAdpter;
@@ -37,11 +40,13 @@ import com.wyk.bookeeping.bean.Icons;
 import com.wyk.bookeeping.utils.DBHelper;
 import com.wyk.bookeeping.utils.SpUtils;
 import com.wyk.bookeeping.utils.TimeUtil;
+import com.wyk.bookeeping.utils.okhttpUtils;
 
 import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class ExpenditureFragment extends Fragment {
@@ -54,8 +59,9 @@ public class ExpenditureFragment extends Fragment {
     private int postion;
     private PopupLayout popupLayout;
     private boolean flag = false;// 符号标识
-    private String str = "";
+    private String str = "", response, note, time;
     View view;
+    private Float count;
 
     @Nullable
     @Override
@@ -185,47 +191,60 @@ public class ExpenditureFragment extends Fragment {
                         kb_tv_done.setGravity(Gravity.CENTER);
                         kb_tv_done.setTextSize(20);
                     } else {
-                        String note = editText.getText().toString();
+                        note = editText.getText().toString();
                         if (TextUtils.isEmpty(note)) {
                             note = data_list.get(postion).getTitle();
                         }
-                        Float count = Float.valueOf(text_count.getText().toString());
-                        if(Float.valueOf(text_count.getText().toString())==0){
-                                Toast.makeText(getActivity(),"请输入金额",Toast.LENGTH_SHORT).show();
-                        }else{
-                            // 获取单例DBHelper
-                            DBHelper dbHelper = DBHelper.getInstance(getActivity());
-                            // 创建一个新的SqliteDatabase对象
-                            SQLiteDatabase db = dbHelper.getWritableDatabase();
-                            // 创建新的ContentValues对象，将数据存入其中
-                            ContentValues values = new ContentValues();
-                            if(count%1==0){
-                                values.put("count", Math.abs(Double.valueOf(text_count.getText().toString())));
-                            }else{
-                                DecimalFormat decimalFormat=new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-                                String p=decimalFormat.format(text_count.getText().toString());
-                                values.put("count", Float.valueOf(p));
-                            }
-                            values.put("inexType", 1);
-                            values.put("detailType", data_list.get(postion).getTitle());
-                            values.put("imgRes", data_list_s.get(postion).getDrawableid());
-                            if ("今天".equals(date_text.getText().toString())) {
-                                values.put("time", TimeUtil.getNowDate());
+                        if (Float.valueOf(text_count.getText().toString()) == 0) {
+                            Toast.makeText(getActivity(), "请输入金额", Toast.LENGTH_SHORT).show();
+                        } else {
+                            String userPhone = SpUtils.getString(getActivity(), "USERPHONE", "");
+                            if (Float.valueOf(text_count.getText().toString()) % 1 == 0) {
+                                count = Math.abs(Float.valueOf(text_count.getText().toString()));
                             } else {
-                                values.put("time", date_text.getText().toString());
+                                DecimalFormat decimalFormat = new DecimalFormat(".00");
+                                String p = decimalFormat.format(Float.valueOf(text_count.getText().toString()));
+                                count = Float.valueOf(p);
                             }
-                            values.put("note", note);
-                            // 插入数据
-                            Log.i("TAG 11:",values.toString());
-                            db.insert("account", null, values);
-
-                            popupLayout.dismiss();
-                            startActivity(new Intent(getActivity(), MainActivity.class));
-                            getActivity().finish();
-
+                            if ("今天".equals(date_text.getText().toString())) {
+                                time = TimeUtil.getNowDate();
+                            } else {
+                                time = date_text.getText().toString();
+                            }
+                            // 如果用户登陆
+                            if (!"".equals(userPhone)) {
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        HashMap<String, String> params = new HashMap<>();
+                                        params.put("user_phone", userPhone);
+                                        params.put("bill_count", count + "");
+                                        params.put("bill_inexType", "1");
+                                        params.put("bill_detailType", data_list.get(postion).getTitle());
+                                        params.put("bill_imgRes", data_list_s.get(postion).getDrawableid() + "");
+                                        params.put("bill_time", time);
+                                        params.put("bill_note", note);
+                                        try {
+                                            String url = "http://" + getString(R.string.localhost) + "/Bookeeping/AddAccount";
+                                            response = okhttpUtils.getInstance().Connection(url, params);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            Message msg = mHandler.obtainMessage();
+                                            msg.obj = "wrong";
+                                            mHandler.sendMessage(msg);
+                                        }
+                                        Message msg = mHandler.obtainMessage();
+                                        msg.obj = response;
+                                        mHandler.sendMessage(msg);
+                                    }
+                                }.start();
+                            } else {
+                                InsertAccountInLocalSql(0);
+                                popupLayout.dismiss();
+                                startActivity(new Intent(getActivity(), MainActivity.class));
+                                getActivity().finish();
+                            }
                         }
-
-
                     }
                     break;
                 case R.id.date_change:
@@ -262,7 +281,60 @@ public class ExpenditureFragment extends Fragment {
         }
     };
 
-    private String getResult() {                            //算法
+    /**
+     * 向本地数据库插入账单数据
+     */
+    private void InsertAccountInLocalSql(int id) {
+        // 获取单例DBHelper
+        DBHelper dbHelper = DBHelper.getInstance(getActivity());
+        // 创建一个新的SqliteDatabase对象
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // 创建新的ContentValues对象，将数据存入其中
+        ContentValues values = new ContentValues();
+        if(id!=0)
+            values.put("_id",id);
+        values.put("count", count);
+        values.put("inexType", 1);
+        values.put("detailType", data_list.get(postion).getTitle());
+        values.put("imgRes", data_list_s.get(postion).getDrawableid());
+        values.put("time", time);
+        values.put("note", note);
+        // 插入数据
+        Log.i("TAG 11:", values.toString());
+        db.insert("account", null, values);
+    }
+
+    /**
+     * 异步通讯回传数据处理
+     */
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            if ("Failed".equals(response)) {
+                Toast.makeText(getActivity(), "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else if ("wrong".equals(msg.obj + "")) {
+                Toast.makeText(getActivity(), "网络连接失败，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else if ("0".equals(response)) {
+                Toast.makeText(getActivity(), "插入失败", Toast.LENGTH_SHORT).show();
+            } else {
+                int id = Integer.parseInt(response);
+                InsertAccountInLocalSql(id);
+                popupLayout.dismiss();
+                startActivity(new Intent(getActivity(), MainActivity.class));
+                getActivity().finish();
+            }
+        }
+    };
+
+
+    /**
+     * 简易计算器算法
+     *
+     * @return
+     */
+    private String getResult() {
         String s = text_count.getText().toString();
         float result = 0;
         boolean point = s.contains(".");
@@ -302,12 +374,9 @@ public class ExpenditureFragment extends Fragment {
     }
 
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-    }
-
+    /**
+     * 获取列表数据
+     */
     private void getData() {
         String json = SpUtils.getString(getActivity(), "ExIconsList");
         String json_s = SpUtils.getString(getActivity(), "ExSIconsList");
@@ -317,31 +386,7 @@ public class ExpenditureFragment extends Fragment {
             data_list = new Gson().fromJson(json, type);
             data_list_s = new Gson().fromJson(json_s, type);
         } else {
-            int[] ex_icon = {
-                    R.drawable.n_food, R.drawable.n_shopping, R.drawable.n_dailyneces, R.drawable.n_traffic,
-                    R.drawable.n_vegetables, R.drawable.n_fruit, R.drawable.n_snacks, R.drawable.n_sport,
-                    R.drawable.n_entertainment, R.drawable.n_communication, R.drawable.n_clothes, R.drawable.n_cosmetology,
-                    R.drawable.n_house, R.drawable.n_home, R.drawable.n_child, R.drawable.n_oldman,
-                    R.drawable.n_socialcontact, R.drawable.n_travel, R.drawable.n_tobacco, R.drawable.n_digital,
-                    R.drawable.n_car, R.drawable.n_medicalcare, R.drawable.n_book, R.drawable.n_education,
-                    R.drawable.n_pets, R.drawable.n_cashgift, R.drawable.n_gift, R.drawable.n_work,
-                    R.drawable.n_carrepair, R.drawable.n_donation, R.drawable.n_lottery, R.drawable.n_friends,
-                    R.drawable.n_express};
-            String[] ex_iconName = {
-                    "餐饮", "购物", "日用", "交通",
-                    "蔬菜", "水果", "零食", "运动",
-                    "娱乐", "通讯", "服饰", "美容",
-                    "住房", "居家", "孩子", "长辈",
-                    "社交", "旅行", "烟酒", "数码",
-                    "汽车", "医疗", "书籍", "学习",
-                    "宠物", "礼金", "礼物", "办公",
-                    "维修", "捐赠", "彩票", "亲友",
-                    "快递"};
-
-            for (int i = 0; i < ex_icon.length; i++) {
-                Icons icons = new Icons(ex_icon[i], ex_iconName[i]);
-                data_list.add(icons);
-            }
+            Toast.makeText(getActivity(), "记账类型数据丢失,请重装软件", Toast.LENGTH_LONG).show();
         }
     }
 }

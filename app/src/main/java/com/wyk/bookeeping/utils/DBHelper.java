@@ -1,5 +1,6 @@
 package com.wyk.bookeeping.utils;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -57,6 +58,57 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * 同步数据
+     */
+    public void InsertAllAccount(Context context, List<Account> accounts) {
+        db = DBHelper.getInstance(context).getWritableDatabase();
+        StringBuilder sql = new StringBuilder();
+        if (accounts.size() == 0)
+            return ;
+        else {
+            if (accounts.size() == 1) {
+                Log.i("Insert","1");
+                Account account = accounts.get(0);
+                // 创建新的ContentValues对象，将数据存入其中
+                ContentValues values = new ContentValues();
+                values.put("_id", account.getBill_id());
+                values.put("user_id", account.getUser_id());
+                values.put("count", account.getBill_count());
+                values.put("inexType", account.getBill_inexType());
+                values.put("detailType", account.getBill_detailType());
+                values.put("imgRes", account.getBill_imgRes());
+                values.put("time", account.getBill_time());
+                values.put("note", account.getBill_note());
+                // 插入数据
+                db.insert("account", null, values);
+            } else {
+                Log.i("Insert","2");
+                Account account = accounts.get(0);
+                sql = new StringBuilder("insert into account(_id,user_id,count,inexType,detailType,imgRes,time,note) " +
+                        "select " + account.getBill_id() + "," + account.getUser_id() + "," + account.getBill_count() +
+                        "," + account.getBill_inexType() + ",'" + account.getBill_detailType() + "'," + account.getBill_imgRes() +
+                        ",'" + account.getBill_time()+ "','" + account.getBill_note() + "' ");
+                for (int i = 1; i < accounts.size(); i++) {
+                    Account account1 = accounts.get(i);
+                    sql.append("union all select ").append(account1.getBill_id()).append(",")
+                            .append(account1.getUser_id()).append(",").append(account1.getBill_count())
+                            .append(",").append(account1.getBill_inexType()).append(",'")
+                            .append(account1.getBill_detailType()).append("',").append(account1.getBill_imgRes())
+                            .append(",'").append(account1.getBill_time()).append("','").
+                            append(account1.getBill_note()).append("' ");
+                }
+                db.execSQL(sql.toString());
+            }
+        }
+    }
+
+    public void deleteAccount(Context context){
+        db = DBHelper.getInstance(context).getWritableDatabase();
+        db.execSQL("DELETE FROM account");
+        db.execSQL("DELETE FROM sqlite_sequence WHERE name = 'account'");
+    }
+
+    /**
      * 查询记账总数
      */
     public String getAllAccountNum(Context context) {
@@ -76,14 +128,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public List<Account> getFirstAccountList(Context context, String year, String month) {
         db = DBHelper.getInstance(context).getWritableDatabase();
         List<Account> accountList = new ArrayList<>();
-        String sql = "select * from account where strftime('%Y-%m',time)='" + year + "-" + month + "' order by time desc";
+        String sql = "select * from account where strftime('%Y-%m',time)='" + year + "-" + month + "' order by time desc,_id desc";
         Cursor cursor = db.rawQuery(sql, null);
         if (cursor.getCount() != 0) {
             while (cursor.moveToNext()) {
                 Account account = new Account(
                         cursor.getLong(0), cursor.getFloat(2), cursor.getInt(3),
                         cursor.getString(4), cursor.getInt(5),
-                        TimeUtil.string2Date(cursor.getString(6), "yyyy-MM-dd")
+                        cursor.getString(6)
                         , cursor.getString(7));
                 accountList.add(account);
             }
@@ -91,22 +143,43 @@ public class DBHelper extends SQLiteOpenHelper {
         return accountList;
     }
 
-    public Map<String,Float> getInExCount(Context context){
+    /**
+     * 查询所有Account数据
+     */
+    public List<Account> getAllAccountList(Context context) {
         db = DBHelper.getInstance(context).getWritableDatabase();
-        Map<String,Float> map = new HashMap<>();
+        List<Account> accountList = new ArrayList<>();
+        String sql = "select * from account";
+        Cursor cursor = db.rawQuery(sql, null);
+        if (cursor.getCount() != 0) {
+            while (cursor.moveToNext()) {
+                Account account = new Account(
+                        cursor.getLong(0), cursor.getFloat(2), cursor.getInt(3),
+                        cursor.getString(4), cursor.getInt(5),
+                       cursor.getString(6)
+                        , cursor.getString(7));
+                accountList.add(account);
+            }
+        }
+        return accountList;
+    }
+
+    public Map<String, Float> getInExCount(Context context) {
+        db = DBHelper.getInstance(context).getWritableDatabase();
+        Map<String, Float> map = new HashMap<>();
         int year = TimeUtil.getNowDateYear();
         String month = TimeUtil.getNowDateMonth_String();
-        String sql = "select SUM(count) from account where strftime('%Y-%m',time)='"+year + "-" + month + "' and inexType=1;";
+        String sql = "select SUM(count) from account where strftime('%Y-%m',time)='" + year + "-" + month + "' and inexType=1;";
         Cursor cursor = db.rawQuery(sql, null);
         cursor.moveToFirst();
-        if(cursor.getString(0)!=null){
-            map.put("ex",Float.parseFloat(cursor.getString(0)));
+        if (cursor.getString(0) != null) {
+            map.put("ex", Float.parseFloat(cursor.getString(0)));
         }
-        String sql2 = "select SUM(count) from account where strftime('%Y-%m',time)='"+year + "-" + month + "' and inexType=0;";
+        String sql2 = "select SUM(count) from account where strftime('%Y-%m',time)='" + year + "-" + month + "' and inexType=0;";
         Cursor cursor2 = db.rawQuery(sql2, null);
         cursor2.moveToFirst();
-        if(cursor2.getString(0)!=null){
-            map.put("in",Float.parseFloat(cursor2.getString(0)));
+        if (cursor2.getString(0) != null) {
+            map.put("in", Float.parseFloat(cursor2.getString(0)));
         }
         return map;
     }

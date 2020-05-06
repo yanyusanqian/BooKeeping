@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,10 +39,13 @@ import com.wyk.bookeeping.bean.Icons;
 import com.wyk.bookeeping.utils.DBHelper;
 import com.wyk.bookeeping.utils.SpUtils;
 import com.wyk.bookeeping.utils.TimeUtil;
+import com.wyk.bookeeping.utils.okhttpUtils;
 
 import java.lang.reflect.Type;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class IncomeFragment extends Fragment {
@@ -54,8 +60,9 @@ public class IncomeFragment extends Fragment {
     private int postion;
     private PopupLayout popupLayout;
     boolean flag = false;// 符号标识
-    private String str = "";
+    private String str = "", response, note, time;
     View view;
+    private Float count;
 
     @Nullable
     @Override
@@ -216,30 +223,60 @@ public class IncomeFragment extends Fragment {
                         kb_tv_done.setGravity(Gravity.CENTER);
                         kb_tv_done.setTextSize(20);
                     } else {
-                        String note = editText.getText().toString();
+                        note = editText.getText().toString();
                         if (TextUtils.isEmpty(note)) {
                             note = data_list.get(postion).getTitle();
                         }
-                        DBHelper dbHelper = DBHelper.getInstance(getActivity());
-                        SQLiteDatabase db = dbHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues();
-                        values.put("count", Math.abs(Float.valueOf(text_count.getText().toString())));
-                        values.put("inexType", 0);
-                        values.put("detailType", data_list.get(postion).getTitle());
-                        values.put("imgRes", data_list_s.get(postion).getDrawableid());
-                        if("今天".equals(date_text.getText().toString())){
-                            values.put("time", TimeUtil.getNowDate());
-                        }else{
-                            values.put("time", date_text.getText().toString());
+                        if (Float.valueOf(text_count.getText().toString()) == 0) {
+                            Toast.makeText(getActivity(), "请输入金额", Toast.LENGTH_SHORT).show();
+                        } else {
+                            String userPhone = SpUtils.getString(getActivity(), "USERPHONE", "");
+                            if (Float.valueOf(text_count.getText().toString()) % 1 == 0) {
+                                count = Math.abs(Float.valueOf(text_count.getText().toString()));
+                            } else {
+                                DecimalFormat decimalFormat = new DecimalFormat(".00");
+                                String p = decimalFormat.format(text_count.getText().toString());
+                                count = Float.valueOf(p);
+                            }
+                            if ("今天".equals(date_text.getText().toString())) {
+                                time = TimeUtil.getNowDate();
+                            } else {
+                                time = date_text.getText().toString();
+                            }
+                            // 如果用户登陆
+                            if (!"".equals(userPhone)) {
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                        HashMap<String, String> params = new HashMap<>();
+                                        params.put("user_phone", userPhone);
+                                        params.put("bill_count", count + "");
+                                        params.put("bill_inexType", "0");
+                                        params.put("bill_detailType", data_list.get(postion).getTitle());
+                                        params.put("bill_imgRes", data_list_s.get(postion).getDrawableid() + "");
+                                        params.put("bill_time", time);
+                                        params.put("bill_note", note);
+                                        try {
+                                            String url = "http://" + getString(R.string.localhost) + "/Bookeeping/AddAccount";
+                                            response = okhttpUtils.getInstance().Connection(url, params);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            Message msg = mHandler.obtainMessage();
+                                            msg.obj = "wrong";
+                                            mHandler.sendMessage(msg);
+                                        }
+                                        Message msg = mHandler.obtainMessage();
+                                        msg.obj = response;
+                                        mHandler.sendMessage(msg);
+                                    }
+                                }.start();
+                            } else {
+                                InsertAccountInLocalSql(0);
+                                popupLayout.dismiss();
+                                startActivity(new Intent(getActivity(), MainActivity.class));
+                                getActivity().finish();
+                            }
                         }
-
-                        values.put("note", note);
-
-                        db.insert("account", null, values);
-
-                        popupLayout.dismiss();
-                        startActivity(new Intent(getActivity(), MainActivity.class));
-                        getActivity().finish();
                     }
                     break;
                 case R.id.date_change:
@@ -272,6 +309,53 @@ public class IncomeFragment extends Fragment {
                             .build();
                     pvTime.show();
                     break;
+            }
+        }
+    };
+
+    /**
+     * 向本地数据库插入账单数据
+     */
+    private void InsertAccountInLocalSql(int id) {
+        // 获取单例DBHelper
+        DBHelper dbHelper = DBHelper.getInstance(getActivity());
+        // 创建一个新的SqliteDatabase对象
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // 创建新的ContentValues对象，将数据存入其中
+        ContentValues values = new ContentValues();
+        if(id!=0)
+            values.put("_id",id);
+        values.put("count", count);
+        values.put("inexType", "0");
+        values.put("detailType", data_list.get(postion).getTitle());
+        values.put("imgRes", data_list_s.get(postion).getDrawableid());
+        values.put("time", time);
+        values.put("note", note);
+        // 插入数据
+        Log.i("TAG 11:", values.toString());
+        db.insert("account", null, values);
+    }
+
+    /**
+     * 异步通讯回传数据处理
+     */
+    @SuppressLint("HandlerLeak")
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+
+            if ("Failed".equals(response)) {
+                Toast.makeText(getActivity(), "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else if ("wrong".equals(msg.obj + "")) {
+                Toast.makeText(getActivity(), "网络连接失败，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else if ("0".equals(response)) {
+                Toast.makeText(getActivity(), "插入失败", Toast.LENGTH_SHORT).show();
+            } else {
+                int id = Integer.parseInt(response);
+                InsertAccountInLocalSql(id);
+                popupLayout.dismiss();
+                startActivity(new Intent(getActivity(), MainActivity.class));
+                getActivity().finish();
             }
         }
     };

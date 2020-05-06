@@ -1,7 +1,6 @@
 package com.wyk.bookeeping.adpter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,7 @@ import com.wyk.bookeeping.R;
 
 import java.util.List;
 
-public class TextAdapter extends RecyclerView.Adapter<TextAdapter.ViewHolder> {
+public class RemindAdapter extends RecyclerView.Adapter<RemindAdapter.ViewHolder> {
     private List<String> textList;
     private Context context;
     static class ViewHolder extends RecyclerView.ViewHolder{
@@ -25,18 +24,18 @@ public class TextAdapter extends RecyclerView.Adapter<TextAdapter.ViewHolder> {
         }
     }
 
-    public TextAdapter(List<String> textlist){
+    public RemindAdapter(List<String> textlist){
         textList = textlist;
     }
     @NonNull
     @Override
-    public TextAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RemindAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_remind_list,parent,false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TextAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RemindAdapter.ViewHolder holder, int position) {
         holder.remind_time.setText(textList.get(position));
     }
 

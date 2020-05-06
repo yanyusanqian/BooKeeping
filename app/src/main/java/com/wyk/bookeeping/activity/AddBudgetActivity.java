@@ -69,7 +69,9 @@ public class AddBudgetActivity extends AppCompatActivity {
             float ex = intent.getFloatExtra("EX",0);
             center_budget_expenditure.setText(String.valueOf(ex));
             float Surplus = intent.getFloatExtra("Surplus",0);
-            center_surplus_budget.setText(String.valueOf(Surplus));
+            DecimalFormat decimalFormat = new DecimalFormat(".00");
+            String p = decimalFormat.format(Surplus);
+            center_surplus_budget.setText(p);
             float Budget = intent.getFloatExtra("Budget",0);
             center_budget.setText(String.valueOf(Budget));
             ArrayList<PieEntry> entries = new ArrayList<PieEntry>();

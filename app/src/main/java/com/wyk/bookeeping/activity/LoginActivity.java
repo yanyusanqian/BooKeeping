@@ -23,11 +23,17 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.wyk.bookeeping.R;
+import com.wyk.bookeeping.bean.Account;
+import com.wyk.bookeeping.bean.Article;
+import com.wyk.bookeeping.bean.User;
 import com.wyk.bookeeping.utils.SpUtils;
 import com.wyk.bookeeping.utils.okhttpUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -139,24 +145,38 @@ public class LoginActivity extends AppCompatActivity {
     Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Log.i("Login Response",response);
-            if("Failed".equals(response)){
-                Toast.makeText(LoginActivity.this,"网络错误，请稍后再试",Toast.LENGTH_SHORT).show();
-            }
-            if ("2".equals(response)) {
-                SpUtils.putString(LoginActivity.this, "USERPHONE", phonenum);
-                SpUtils.putString(LoginActivity.this, "USERNAME", "未命名");
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
-            }
-            if ("0".equals(response)) {
+            Log.i("Login Response", response);
+            if ("Failed".equals(response)) {
+                Toast.makeText(LoginActivity.this, "网络错误，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else if ("0".equals(response)) {
                 phonenum_err.setText("手机号不存在");
-            }
-            if ("1".equals(response)) {
+            } else if ("1".equals(response)) {
                 phonenum_err.setText("手机号不存在或密码错误");
-            }
-            if("wrong".equals(msg.obj+"")){
-                Toast.makeText(LoginActivity.this,"网络连接失败，请稍后再试",Toast.LENGTH_SHORT).show();
+            } else if ("wrong".equals(msg.obj + "")) {
+                Toast.makeText(LoginActivity.this, "网络连接失败，请稍后再试", Toast.LENGTH_SHORT).show();
+            } else {
+                Gson gson = new Gson();
+                if (!TextUtils.isEmpty(response)) {
+                    java.lang.reflect.Type type = new TypeToken<List<User>>() {
+                    }.getType();
+                    List<User> list = gson.fromJson(response, type);
+                    SpUtils.putString(LoginActivity.this, "USERPHONE", phonenum);
+                    SpUtils.putString(LoginActivity.this, "USERSTATUS", "1");
+                    if (list.get(0).getUser_nikename().equals("未命名"))
+                        SpUtils.putString(LoginActivity.this, "USERNAME", "未命名");
+                    else
+                        SpUtils.putString(LoginActivity.this, "USERNAME", list.get(0).getUser_nikename());
+                    if (list.get(0).getUser_image() != null)
+                        SpUtils.putString(LoginActivity.this, "USERIMAGE", list.get(0).getUser_image());
+
+                    // 要判断两者数据库是否相同，多的加上去。
+                    // 这样，假设本地没数据，就直接跳转到启动页，拉取远程数据。
+                    // 如果本地有数据，就把本地数据传上去，按userphone插入到远程数据库中，再拉取远程数据库的内容到本地数据库来。
+
+                    startActivity(new Intent(LoginActivity.this, SplashActivity.class));
+                    finish();
+
+                }
             }
         }
     };
@@ -199,3 +219,4 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 }
+

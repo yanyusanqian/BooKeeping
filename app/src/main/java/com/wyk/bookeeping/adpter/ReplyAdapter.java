@@ -1,6 +1,7 @@
 package com.wyk.bookeeping.adpter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,8 @@ public class ReplyAdapter extends RecyclerView.Adapter<ReplyAdapter.ViewHolder> 
         RequestOptions requestOptions = new RequestOptions()
                 .placeholder(R.mipmap.headportrait)
                 .centerCrop();
-        Glide.with(context).load(replyList.get(position).getUser_imgage()).apply(requestOptions).into(holder.reply_headportrait);
+        Log.i("TAG glide","http://"+context.getString(R.string.localhost)+"/pic_file/"+replyList.get(position).getUser_imgage());
+        Glide.with(context).load("http://"+context.getString(R.string.localhost)+"/pic_file/"+replyList.get(position).getUser_imgage()).apply(requestOptions).into(holder.reply_headportrait);
 
         holder.reply_name.setText(replyList.get(position).getUser_nikename());
         holder.reply_content.setText(replyList.get(position).getReply_content());

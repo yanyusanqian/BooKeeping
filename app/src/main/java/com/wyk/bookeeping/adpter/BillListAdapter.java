@@ -83,17 +83,17 @@ public class BillListAdapter extends BaseAdapter<RecyclerView.ViewHolder> {
         if (viewType == VIEW_TYPE_ITEM) {
             ItemHolder viewHolder = (ItemHolder) holder;
 
-            float count = accountList.get(position).getCount();
-            int type = accountList.get(position).getInexType();
+            float count = accountList.get(position).getBill_count();
+            int type = accountList.get(position).getBill_inexType();
             if (type == 1)
                 count = -count;
             viewHolder.amount_bill.setText(count + "");
-            viewHolder.text_bill.setText(accountList.get(position).getNote());
-            viewHolder.imageview_bill.setImageResource(accountList.get(position).getImgRes());
+            viewHolder.text_bill.setText(accountList.get(position).getBill_note());
+            viewHolder.imageview_bill.setImageResource(accountList.get(position).getBill_imgRes());
         } else {
             TitleHolder viewHolder = (TitleHolder) holder;
-                viewHolder.tv_title_date.setText(TimeUtil.date2String(accountList.get(position+1).getTime(), "MM月dd日"));
-                viewHolder.tv_title_week.setText(TimeUtil.getWeekByDate(accountList.get(position+1).getTime()));
+                viewHolder.tv_title_date.setText(TimeUtil.date2String(TimeUtil.string2Date(accountList.get(position+1).getBill_time(),"yyyy-MM-dd"), "MM月dd日"));
+                viewHolder.tv_title_week.setText(TimeUtil.getWeekByDate(TimeUtil.string2Date(accountList.get(position+1).getBill_time(),"yyyy-MM-dd")));
                 float expenditure = accountList.get(position).getTitle_expenditure();
                 float income = accountList.get(position).getTitle_income();
                 if(income !=0){
